@@ -352,10 +352,14 @@ function typePieChart(data) {
 
   console.log("Type counts:", typeCounts);
 
-  const labels = Object.keys(typeCounts);
-  let values = Object.values(typeCounts);
-  // Ensure values are numbers and filter out any non-finite values (NaN, Infinity, -Infinity)
-  values = values.map(v => typeof v === 'number' ? v : parseFloat(v)).filter(v => Number.isFinite(v));
+  // Sort types by count in descending order
+  const sortedTypes = Object.entries(typeCounts)
+     .map(([label, value]) => [label, typeof value === 'number' ? value : parseFloat(value)]) // Ensure values are numbers
+     .filter(([label, value]) => Number.isFinite(value) && label !== null && label !== '') // Filter out non-finite values and invalid labels
+     .sort(([, a], [, b]) => b - a);
+
+  const labels = sortedTypes.map(([label]) => label);
+  const values = sortedTypes.map(([, value]) => value);
 
   // Using colors that roughly correspond to magnitude danger levels or a diverse palette
   const colors = labels.map(label => {
@@ -1305,10 +1309,14 @@ function magTypeDistributionPlots(data) {
   
   console.log("magTypeDistributionPlots - type counts AFTER counting:", typeCounts);
   
-  const labels = Object.keys(typeCounts);
-  let values = Object.values(typeCounts);
-  // Ensure values are numbers and filter out any non-finite values (NaN, Infinity, -Infinity)
-  values = values.map(v => typeof v === 'number' ? v : parseFloat(v)).filter(v => Number.isFinite(v));
+  // Sort types by count in descending order
+  const sortedTypes = Object.entries(typeCounts)
+     .map(([label, value]) => [label, typeof value === 'number' ? value : parseFloat(value)]) // Ensure values are numbers
+     .filter(([label, value]) => Number.isFinite(value) && label !== null && label !== '') // Filter out non-finite values and invalid labels
+     .sort(([, a], [, b]) => b - a);
+
+  const labels = sortedTypes.map(([label]) => label);
+  const values = sortedTypes.map(([, value]) => value);
 
   // Add logs to check labels and values before plotting
   console.log("magTypeDistributionPlots - labels before plotting:", labels);
@@ -1330,7 +1338,13 @@ function magTypeDistributionPlots(data) {
     type: 'bar',
     name: 'Magnitude Types',
     marker: {
-      color: '#00BCD4',
+      // Assign individual colors matching the pie chart
+      color: labels.map(label => {
+          if (label === 'mww') return '#673AB7'; // Deep Purple for mww
+          const palette = ['#00BCD4', '#FFC107', '#E91E63', '#4CAF50', '#9C27B0', '#FF9800', '#FF5733', '#795548', '#2196F3'];
+          const index = labels.indexOf(label);
+          return palette[index % palette.length];
+      }),
       line: {
         color: 'white',
         width: 1
@@ -1339,8 +1353,8 @@ function magTypeDistributionPlots(data) {
   };
 
   const layout = {
-    title: 'Magnitude Measurement Types',
-    xaxis: { 
+    title: 'Magnitude Measurement Types: Count',
+    xaxis: {
       title: 'Type',
       tickangle: -45,
       automargin: true
@@ -1361,7 +1375,13 @@ function magTypeDistributionPlots(data) {
     type: 'pie',
     name: 'Magnitude Types',
     marker: {
-      colors: ['#00BCD4', '#FFC107', '#E91E63', '#4CAF50', '#9C27B0']
+      // Use the same individual colors as the bar chart
+      colors: labels.map(label => {
+          if (label === 'mww') return '#673AB7'; // Deep Purple for mww
+          const palette = ['#00BCD4', '#FFC107', '#E91E63', '#4CAF50', '#9C27B0', '#FF9800', '#FF5733', '#795548', '#2196F3'];
+          const index = labels.indexOf(label);
+          return palette[index % palette.length];
+      })
     },
     textinfo: 'percent+label',
     hole: 0.4
