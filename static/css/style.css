@@ -211,7 +211,7 @@ h3, h5, h6 {
   box-shadow:
     8px 8px 16px rgba(0, 0, 0, 0.05),
     -8px -8px 16px rgba(255, 255, 255, 0.8);
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   border: 1px solid var(--border);
 }
 
@@ -550,7 +550,7 @@ h3, h5, h6 {
 [id^="chart-"] {
   border-radius: 12px;
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: box-shadow 0.3s ease;
 }
 
 [id^="chart-"]:hover {
@@ -1044,4 +1044,9 @@ body.dark-mode .summary-card h3 {
 
 [data-theme="dark"] #earthquakeTable tbody tr:hover {
   background-color: var(--hover-bg);
+}
+
+/* Filter Offcanvas Custom Width */
+#filterOffcanvas {
+  --bs-offcanvas-width: 450px;
 }

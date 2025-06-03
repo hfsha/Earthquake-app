@@ -29,6 +29,9 @@
       <span class="light-icon">🌞</span>
       <span class="dark-icon">🌙</span>
     </button>
+    <button class="btn neumorphic-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#filterOffcanvas" aria-controls="filterOffcanvas" aria-label="Open filters">
+        📊 Filters
+    </button>
   </div>
 
   <ul class="nav nav-tabs" id="mainTabs" role="tablist">
@@ -48,246 +51,179 @@
     <!-- Visualization Tab -->
     <div class="tab-pane fade show active" id="visualization" role="tabpanel" aria-labelledby="visualization-tab">
 
-      <div class="row gx-4 mb-4">
-        <div class="col-lg-3">
-          <div class="card shadow filter-card p-4 rounded-4">
-            <h5 class="mb-3 fw-bold">Filters</h5>
-
-            <div class="mb-4">
-              <label for="magnitudeFilter" class="form-label fw-semibold">Magnitude Range</label>
-              <div class="d-flex gap-2">
-                <input type="number" class="form-control neumorphic-input" id="minMagnitude" placeholder="Min" step="0.1" min="0" max="10">
-                <input type="number" class="form-control neumorphic-input" id="maxMagnitude" placeholder="Max" step="0.1" min="0" max="10">
-              </div>
+      <div class="col-lg-12">
+        <div class="row gx-4 mb-4" id="summary-cards">
+          <div class="col-md-4">
+            <div class="card neumorphic-card text-center p-4 summary-card">
+              <h6 class="fw-semibold text-secondary">Total Earthquakes</h6>
+              <h3 class="mt-2 text-primary" id="totalEarthquakes">-</h3>
             </div>
-
-            <div class="mb-4">
-              <label for="depthFilter" class="form-label fw-semibold">Depth Range (km)</label>
-              <div class="d-flex gap-2">
-                <input type="number" class="form-control neumorphic-input" id="minDepth" placeholder="Min" step="1" min="0">
-                <input type="number" class="form-control neumorphic-input" id="maxDepth" placeholder="Max" step="1" min="0">
-              </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card neumorphic-card text-center p-4 summary-card">
+              <h6 class="fw-semibold text-secondary">Average Magnitude</h6>
+              <h3 class="mt-2 text-success" id="avgMagnitude">-</h3>
             </div>
-
-            <div class="mb-4">
-              <label for="dateRangeFilter" class="form-label fw-semibold">Date Range</label>
-              <div class="d-flex flex-column flex-md-row gap-2">
-                <input type="date" class="form-control neumorphic-input" id="startDate">
-                <input type="date" class="form-control neumorphic-input" id="endDate">
-              </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card neumorphic-card text-center p-4 summary-card">
+              <h6 class="fw-semibold text-secondary">Average Depth (km)</h6>
+              <h3 class="mt-2 text-warning" id="avgDepth">-</h3>
             </div>
+          </div>
+        </div>
 
-            <div class="mb-4">
-              <label for="typeFilter" class="form-label fw-semibold">Magnitude Category</label>
-              <select id="typeFilter" class="form-select neumorphic-input">
-                <option value="All">All Categories</option>
-                <option value="Major">Major</option>
-                <option value="Great">Great</option>
-                <option value="Severe">Severe</option>
-                <option value="Catastrophic">Catastrophic</option>
-                <option value="Mega">Mega</option>
+        <div class="card shadow p-4 mb-4 rounded-4">
+          <h5 class="mb-3 fw-semibold">Earthquake Distribution Map</h5>
+          <div id="map" style="height: 480px; border-radius: 12px;"></div>
+        </div>
+
+        <div class="row g-4 mb-4">
+          <!-- Magnitude Category Distribution -->
+          <div class="col-md-6">
+            <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
+              <h6 class="mb-3 fw-semibold">Magnitude Category Distribution</h6>
+              <div id="chart-type-pie" style="height: 360px;"></div>
+            </div>
+          </div>
+
+          <!-- Existing Violin Plot -->
+           <div class="col-md-6">
+            <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
+              <h6 class="mb-3 fw-semibold">Magnitude Distribution</h6>
+              <div id="chart-violin" style="height: 360px;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-4 mb-4">
+          <!-- Top Affected Regions -->
+          <div class="col-md-12">
+            <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
+              <h6 class="mb-3 fw-semibold">Top Affected Regions</h6>
+              <div id="chart-regions-bar" style="height: 360px;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-4 mb-4">
+          <!-- New Distribution Plots -->
+          <div class="col-md-6">
+            <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
+              <h6 class="mb-3 fw-semibold">Earthquakes by Depth: Histogram</h6>
+              <div id="chart-depth-histogram" style="height: 300px;"></div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
+              <h6 class="mb-3 fw-semibold">Earthquakes by Depth: Box & Whisker Plot</h6>
+              <div id="chart-depth-box" style="height: 300px;"></div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
+              <h6 class="mb-3 fw-semibold">Earthquakes by Significance: Histogram</h6>
+              <div id="chart-sig-histogram" style="height: 300px;"></div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
+              <h6 class="mb-3 fw-semibold">Earthquakes by Significance: Box & Whisker Plot</h6>
+              <div id="chart-sig-box" style="height: 300px;"></div>
+            </div>
+          </div>
+        </div>
+
+         <div class="row g-4 mb-4">
+          <!-- New Relationship Plots -->
+          <div class="col-md-6">
+            <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
+              <h6 class="mb-3 fw-semibold">Earthquakes: Magnitude vs Depth</h6>
+              <div id="chart-mag-depth" style="height: 360px;"></div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
+              <h6 class="mb-3 fw-semibold">Earthquakes: Magnitude vs Significance</h6>
+              <div id="chart-mag-sig" style="height: 360px;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-4 mb-4">
+          <!-- New Categorical Plots -->
+           <div class="col-md-6">
+            <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
+               <h6 class="mb-3 fw-semibold">Magnitude Measurement Type: Count</h6>
+               <div id="chart-mag-type-bar" style="height: 360px;"></div>
+             </div>
+           </div>
+          <div class="col-md-6">
+            <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
+              <h6 class="mb-3 fw-semibold">Magnitude Measurement Type: Percentage</h6>
+              <div id="chart-mag-type-pie" style="height: 360px;"></div>
+             </div>
+           </div>
+        </div>
+
+         <div class="row g-4 mb-4">
+           <!-- New Tsunami Analysis Plots -->
+           <div class="col-md-6">
+             <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
+               <h6 class="mb-3 fw-semibold">Tsunami Occurrence: Percentage</h6>
+               <div id="chart-tsunami-pie" style="height: 300px;"></div>
+             </div>
+           </div>
+           <div class="col-md-6">
+             <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
+               <h6 class="mb-3 fw-semibold">Tsunami Occurrence: Count</h6>
+               <div id="chart-tsunami-bar" style="height: 300px;"></div>
+             </div>
+           </div>
+         </div>
+
+        <div class="card shadow p-4 neumorphic-card mt-4 rounded-4">
+          <h5 class="mb-3 fw-semibold">Earthquake Frequency Over Time</h5>
+          <div class="time-series-controls mb-3">
+            <button class="time-series-btn active" data-period="day">Daily</button>
+            <button class="time-series-btn" data-period="week">Weekly</button>
+            <button class="time-series-btn" data-period="month">Monthly</button>
+            <button class="time-series-btn" data-period="year">Yearly</button>
+          </div>
+          <div id="chart-time-series" style="height: 360px;"></div>
+        </div>
+
+        <div class="card shadow p-4 neumorphic-card mt-4 rounded-4">
+          <h5 class="mb-3 fw-semibold">Anomaly Detection</h5>
+          <div class="row mb-3 d-flex align-items-center g-3">
+            <div class="col-md-6">
+              <select id="anomalyMetric" class="form-select neumorphic-input">
+                <option value="magnitude">Magnitude</option>
+                <option value="depth">Depth</option>
               </select>
             </div>
-
-            <button id="clearFiltersBtn" class="btn btn-outline-secondary neumorphic-btn w-100">Clear Filters</button>
-
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="anomalyThreshold" class="form-label">Sensitivity: <span id="thresholdValue">2.0</span>σ</label>
+                <input type="range" class="form-range neumorphic-input" id="anomalyThreshold" min="1" max="3" step="0.1" value="2.0">
+              </div>
+            </div>
           </div>
-
-          <div class="card shadow legend-card p-4 rounded-4 mt-4">
-            <h6 class="fw-semibold mb-3 text-center">Magnitude Legend</h6>
-            <div class="d-flex align-items-center justify-content-center mb-2">
-              <div class="epicenter-marker critical"></div>
-              <span class="ms-2 fw-semibold">Critical (>7.0)</span>
-            </div>
-            <div class="d-flex align-items-center justify-content-center mb-2">
-              <div class="epicenter-marker high"></div>
-              <span class="ms-2 fw-semibold">High (6.0-7.0)</span>
-            </div>
-            <div class="d-flex align-items-center justify-content-center mb-2">
-              <div class="epicenter-marker medium"></div>
-              <span class="ms-2 fw-semibold">Medium (4.5-6.0)</span>
-            </div>
-            <div class="d-flex align-items-center justify-content-center">
-              <div class="epicenter-marker low"></div>
-              <span class="ms-2 fw-semibold">Low (<4.5)</span>
-            </div>
+          <div id="chart-anomaly" style="height: 400px;"></div>
+          <div id="anomalyList" class="mt-3">
+            <h6 class="fw-semibold mb-2">Detected Anomalies:</h6>
+            <div class="list-group" id="anomalyItems"></div>
           </div>
         </div>
 
-        <div class="col-lg-9">
-          <div class="row gx-4 mb-4" id="summary-cards">
-            <div class="col-md-4">
-              <div class="card neumorphic-card text-center p-4 summary-card">
-                <h6 class="fw-semibold text-secondary">Total Earthquakes</h6>
-                <h3 class="mt-2 text-primary" id="totalEarthquakes">-</h3>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="card neumorphic-card text-center p-4 summary-card">
-                <h6 class="fw-semibold text-secondary">Average Magnitude</h6>
-                <h3 class="mt-2 text-success" id="avgMagnitude">-</h3>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="card neumorphic-card text-center p-4 summary-card">
-                <h6 class="fw-semibold text-secondary">Average Depth (km)</h6>
-                <h3 class="mt-2 text-warning" id="avgDepth">-</h3>
-              </div>
-            </div>
-          </div>
-
-          <div class="card shadow p-4 mb-4 rounded-4">
-            <h5 class="mb-3 fw-semibold">Earthquake Distribution Map</h5>
-            <div id="map" style="height: 480px; border-radius: 12px;"></div>
-          </div>
-
-          <div class="row g-4 mb-4">
-            <!-- Magnitude Category Distribution -->
-            <div class="col-md-6">
-              <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
-                <h6 class="mb-3 fw-semibold">Magnitude Category Distribution</h6>
-                <div id="chart-type-pie" style="height: 360px;"></div>
-              </div>
-            </div>
-
-            <!-- Existing Violin Plot -->
-             <div class="col-md-6">
-              <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
-                <h6 class="mb-3 fw-semibold">Magnitude Distribution</h6>
-                <div id="chart-violin" style="height: 360px;"></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="row g-4 mb-4">
-            <!-- Top Affected Regions -->
-            <div class="col-md-12">
-              <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
-                <h6 class="mb-3 fw-semibold">Top Affected Regions</h6>
-                <div id="chart-regions-bar" style="height: 360px;"></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="row g-4 mb-4">
-            <!-- New Distribution Plots -->
-            <div class="col-md-6">
-              <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
-                <h6 class="mb-3 fw-semibold">Earthquakes by Depth: Histogram</h6>
-                <div id="chart-depth-histogram" style="height: 300px;"></div>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
-                <h6 class="mb-3 fw-semibold">Earthquakes by Depth: Box & Whisker Plot</h6>
-                <div id="chart-depth-box" style="height: 300px;"></div>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
-                <h6 class="mb-3 fw-semibold">Earthquakes by Significance: Histogram</h6>
-                <div id="chart-sig-histogram" style="height: 300px;"></div>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
-                <h6 class="mb-3 fw-semibold">Earthquakes by Significance: Box & Whisker Plot</h6>
-                <div id="chart-sig-box" style="height: 300px;"></div>
-              </div>
-            </div>
-          </div>
-
-           <div class="row g-4 mb-4">
-            <!-- New Relationship Plots -->
-            <div class="col-md-6">
-              <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
-                <h6 class="mb-3 fw-semibold">Earthquakes: Magnitude vs Depth</h6>
-                <div id="chart-mag-depth" style="height: 360px;"></div>
-              </div>
-            </div>
-
-            <div class="col-md-6">
-              <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
-                <h6 class="mb-3 fw-semibold">Earthquakes: Magnitude vs Significance</h6>
-                <div id="chart-mag-sig" style="height: 360px;"></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="row g-4 mb-4">
-            <!-- New Categorical Plots -->
-             <div class="col-md-6">
-              <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
-                 <h6 class="mb-3 fw-semibold">Magnitude Measurement Type: Count</h6>
-                 <div id="chart-mag-type-bar" style="height: 360px;"></div>
-               </div>
-             </div>
-            <div class="col-md-6">
-              <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
-                <h6 class="mb-3 fw-semibold">Magnitude Measurement Type: Percentage</h6>
-                <div id="chart-mag-type-pie" style="height: 360px;"></div>
-               </div>
-             </div>
-          </div>
-
-           <div class="row g-4 mb-4">
-             <!-- New Tsunami Analysis Plots -->
-             <div class="col-md-6">
-               <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
-                 <h6 class="mb-3 fw-semibold">Tsunami Occurrence: Percentage</h6>
-                 <div id="chart-tsunami-pie" style="height: 300px;"></div>
-               </div>
-             </div>
-             <div class="col-md-6">
-               <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
-                 <h6 class="mb-3 fw-semibold">Tsunami Occurrence: Count</h6>
-                 <div id="chart-tsunami-bar" style="height: 300px;"></div>
-               </div>
-             </div>
+         <div class="card shadow p-4 neumorphic-card mt-5 rounded-4">
+           <h5 class="mb-3 fw-semibold"></h5>
+           <div id="chart-country-analysis" class="row g-4">
+               <!-- Placeholders for country-specific charts will be added here by JS -->
            </div>
+         </div>
 
-          <div class="card shadow p-4 neumorphic-card mt-4 rounded-4">
-            <h5 class="mb-3 fw-semibold">Earthquake Frequency Over Time</h5>
-            <div class="time-series-controls mb-3">
-              <button class="time-series-btn active" data-period="day">Daily</button>
-              <button class="time-series-btn" data-period="week">Weekly</button>
-              <button class="time-series-btn" data-period="month">Monthly</button>
-              <button class="time-series-btn" data-period="year">Yearly</button>
-            </div>
-            <div id="chart-time-series" style="height: 360px;"></div>
-          </div>
-
-          <div class="card shadow p-4 neumorphic-card mt-4 rounded-4">
-            <h5 class="mb-3 fw-semibold">Anomaly Detection</h5>
-            <div class="row mb-3 d-flex align-items-center g-3">
-              <div class="col-md-6">
-                <select id="anomalyMetric" class="form-select neumorphic-input">
-                  <option value="magnitude">Magnitude</option>
-                  <option value="depth">Depth</option>
-                </select>
-              </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label for="anomalyThreshold" class="form-label">Sensitivity: <span id="thresholdValue">2.0</span>σ</label>
-                  <input type="range" class="form-range neumorphic-input" id="anomalyThreshold" min="1" max="3" step="0.1" value="2.0">
-                </div>
-              </div>
-            </div>
-            <div id="chart-anomaly" style="height: 400px;"></div>
-            <div id="anomalyList" class="mt-3">
-              <h6 class="fw-semibold mb-2">Detected Anomalies:</h6>
-              <div class="list-group" id="anomalyItems"></div>
-            </div>
-          </div>
-
-           <div class="card shadow p-4 neumorphic-card mt-5 rounded-4">
-             <h5 class="mb-3 fw-semibold"></h5>
-             <div id="chart-country-analysis" class="row g-4">
-                 <!-- Placeholders for country-specific charts will be added here by JS -->
-             </div>
-           </div>
-
-        </div>
       </div>
     </div>
 
@@ -381,6 +317,75 @@
 
 <!-- Leaflet Fullscreen -->
 <script src="https://unpkg.com/leaflet-fullscreen@latest/dist/Leaflet.fullscreen.js"></script>
+
+<!-- Bootstrap Offcanvas -->
+<!-- Bootstrap bundle includes this, but listing for clarity -->
+
+<!-- Filter Offcanvas -->
+<div class="offcanvas offcanvas-end neumorphic-card" tabindex="-1" id="filterOffcanvas" aria-labelledby="filterOffcanvasLabel">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title fw-bold" id="filterOffcanvasLabel">Filters</h5>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    <!-- Filter content goes here -->
+      <div class="card shadow filter-card p-4 rounded-4" style="box-shadow: none; border: none;">
+        <h5 class="mb-3 fw-bold"></h5>
+
+        <div class="mb-4">
+          <label for="minMagnitude" class="form-label fw-semibold">Magnitude Range</label>
+          <div class="d-flex gap-2">
+            <input type="number" class="form-control neumorphic-input" id="minMagnitude" placeholder="Min" step="0.1" min="0" max="10">
+            <input type="number" class="form-control neumorphic-input" id="maxMagnitude" placeholder="Max" step="0.1" min="0" max="10">
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label for="minDepth" class="form-label fw-semibold">Depth Range (km)</label>
+          <div class="d-flex gap-2">
+            <input type="number" class="form-control neumorphic-input" id="minDepth" placeholder="Min" step="1" min="0">
+            <input type="number" class="form-control neumorphic-input" id="maxDepth" placeholder="Max" step="1" min="0">
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label for="startDate" class="form-label fw-semibold">Date Range</label>
+          <div class="d-flex flex-column flex-md-row gap-2">
+            <div class="flex-fill">
+              <input type="date" class="form-control neumorphic-input" id="startDate">
+            </div>
+            <div class="flex-fill">
+              <input type="date" class="form-control neumorphic-input" id="endDate">
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label for="typeFilter" class="form-label fw-semibold">Magnitude Category</label>
+          <select id="typeFilter" class="form-select neumorphic-input">
+            <option value="All">All Categories</option>
+            <option value="Major">Major</option>
+            <option value="Great">Great</option>
+            <option value="Severe">Severe</option>
+            <option value="Catastrophic">Catastrophic</option>
+            <option value="Mega">Mega</option>
+          </select>
+        </div>
+
+        <div class="mb-4">
+          <label for="tsunamiFilter" class="form-label fw-semibold">Tsunami</label>
+          <select id="tsunamiFilter" class="form-select neumorphic-input">
+            <option value="All">All</option>
+            <option value="1">Yes</option>
+            <option value="0">No</option>
+          </select>
+        </div>
+
+        <button id="clearFiltersBtn" class="btn btn-outline-secondary neumorphic-btn w-100">Clear Filters</button>
+
+      </div>
+  </div>
+</div>
 
 <!-- Custom JavaScript -->
 <script src="{{ url_for('static', filename='js/main.js') }}?v=1.1"></script>
