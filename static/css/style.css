@@ -843,19 +843,19 @@ body.dark-mode .summary-card h3 {
 }
 
 .epicenter-marker.low {
-  background-color: var(--magnitude-low);
+  background-color: #00BCD4; /* Cyan */
 }
 
 .epicenter-marker.medium {
-  background-color: var(--magnitude-medium);
+  background-color: #FFC107; /* Orange */
 }
 
 .epicenter-marker.high {
-  background-color: var(--magnitude-high);
+  background-color: #E91E63; /* Pink/Red */
 }
 
 .epicenter-marker.critical {
-  background-color: var(--magnitude-critical);
+  background-color: #FF3D00; /* Red */
 }
 
 /* Enhanced map controls */

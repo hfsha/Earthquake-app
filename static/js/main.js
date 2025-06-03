@@ -353,7 +353,9 @@ function typePieChart(data) {
   console.log("Type counts:", typeCounts);
 
   const labels = Object.keys(typeCounts);
-  const values = labels.map(label => typeCounts[label]);
+  let values = Object.values(typeCounts);
+  // Ensure values are numbers and filter out any non-finite values (NaN, Infinity, -Infinity)
+  values = values.map(v => typeof v === 'number' ? v : parseFloat(v)).filter(v => Number.isFinite(v));
 
   // Using colors that roughly correspond to magnitude danger levels or a diverse palette
   const colors = labels.map(label => {
@@ -1304,10 +1306,16 @@ function magTypeDistributionPlots(data) {
   console.log("magTypeDistributionPlots - type counts AFTER counting:", typeCounts);
   
   const labels = Object.keys(typeCounts);
-  const values = Object.values(typeCounts);
+  let values = Object.values(typeCounts);
+  // Ensure values are numbers and filter out any non-finite values (NaN, Infinity, -Infinity)
+  values = values.map(v => typeof v === 'number' ? v : parseFloat(v)).filter(v => Number.isFinite(v));
 
-  if (labels.length === 0) {
-    console.warn("No valid magnitude types found after counting");
+  // Add logs to check labels and values before plotting
+  console.log("magTypeDistributionPlots - labels before plotting:", labels);
+  console.log("magTypeDistributionPlots - values before plotting:", values);
+
+  if (labels.length === 0 || values.length === 0 || values.every(v => v === 0)) {
+    console.warn("No valid magnitude types found after counting or all counts are zero");
       if(barDiv) Plotly.purge(barDiv);
       if(pieDiv) Plotly.purge(pieDiv);
       if(barDiv) barDiv.innerHTML = '<div class="no-data-message">No data available for Magnitude Type Bar Chart</div>';

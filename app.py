@@ -11,7 +11,7 @@ app = Flask(__name__)
 # Load earthquake data
 try:
     print("Attempting to load earthquake data...")
-    df = pd.read_csv('data/earthquake_cleaned.csv')
+    df = pd.read_csv('Earthquake-app/data/earthquake_cleaned.csv')
     print(f"Successfully loaded data with {len(df)} rows")
     print("Columns in dataset:", df.columns.tolist())
     
@@ -75,8 +75,8 @@ try:
     
     # Load model and label encoder
     print("Loading model and label encoder...")
-    model_pipeline = joblib.load('models/earthquake_model.pkl')
-    le_target = joblib.load('models/earthquake_label_encoder.pkl')
+    model_pipeline = joblib.load('Earthquake-app/models/earthquake_model.pkl')
+    le_target = joblib.load('Earthquake-app/models/earthquake_label_encoder.pkl')
     print("Model and label encoder loaded successfully")
     
 except Exception as e:
