@@ -50,7 +50,7 @@ async function fetchData() {
           magnitude: parseFloat(d.magnitude) || 0, // Default to 0 if parsing fails
           depth: parseFloat(d.depth) || 0, // Default to 0 if parsing fails
           tsunami: d.tsunami != null ? parseInt(d.tsunami) : null, // Keep tsunami as 0, 1, or null
-          significance: parseFloat(d.significance) || 0, // Default to 0 if parsing fails
+          significance: parseFloat(d.sig) || 0, // Use the correct 'sig' property from backend, default to 0 if parsing fails
           latitude: parseFloat(d.latitude) || null, // Keep latitude as number or null
           longitude: parseFloat(d.longitude) || null // Keep longitude as number or null
         };
