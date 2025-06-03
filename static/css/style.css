@@ -976,3 +976,72 @@ body.dark-mode .summary-card h3 {
     padding: 8px;
   }
 }
+
+/* Data Table Styles */
+#earthquakeTable {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 1rem;
+}
+
+#earthquakeTable thead th {
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  font-weight: 600;
+  padding: 1rem;
+  border-bottom: 2px solid var(--border-color);
+  text-align: left;
+}
+
+#earthquakeTable tbody td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-color);
+}
+
+#earthquakeTable tbody tr:hover {
+  background-color: var(--hover-bg);
+  transition: background-color 0.2s ease;
+}
+
+#dataSearch {
+  min-width: 200px;
+}
+
+#dataEntries {
+  min-width: 120px;
+}
+
+.pagination {
+  margin: 0;
+}
+
+.pagination .page-item .page-link {
+  background-color: var(--card-bg);
+  border-color: var(--border-color);
+  color: var(--text-color);
+  padding: 0.5rem 1rem;
+}
+
+.pagination .page-item.active .page-link {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.pagination .page-item .page-link:hover {
+  background-color: var(--hover-bg);
+}
+
+#tableInfo {
+  font-size: 0.875rem;
+}
+
+/* Dark mode adjustments for table */
+[data-theme="dark"] #earthquakeTable thead th {
+  background-color: var(--card-bg);
+}
+
+[data-theme="dark"] #earthquakeTable tbody tr:hover {
+  background-color: var(--hover-bg);
+}

@@ -1,5 +1,8 @@
 let rawData = [];
 let filteredData = [];
+let currentPage = 1;
+let entriesPerPage = 10;
+let earthquakeData = [];
 
 // Dark Mode Toggle
 document.addEventListener('DOMContentLoaded', function() {
@@ -1639,3 +1642,129 @@ function detailedCountryAnalysis(data) {
        chartDiv.innerHTML = '<div class="no-data-message col-12">No data available for Detailed Country Analysis</div>';
    }
 }
+
+// Data Table Functionality
+// Load earthquake data
+async function loadEarthquakeData() {
+  try {
+    const response = await fetch('/api/earthquake-data');
+    earthquakeData = await response.json();
+    filteredData = [...earthquakeData];
+    updateTable();
+  } catch (error) {
+    console.error('Error loading earthquake data:', error);
+  }
+}
+
+// Update table with current data
+function updateTable() {
+  const tableBody = document.querySelector('#earthquakeTable tbody');
+  const startIndex = (currentPage - 1) * entriesPerPage;
+  const endIndex = startIndex + entriesPerPage;
+  const pageData = filteredData.slice(startIndex, endIndex);
+
+  tableBody.innerHTML = '';
+  pageData.forEach(quake => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${new Date(quake.date_time).toLocaleDateString()}</td>
+      <td>${quake.latitude.toFixed(4)}</td>
+      <td>${quake.longitude.toFixed(4)}</td>
+      <td>${quake.magnitude.toFixed(2)}</td>
+      <td>${quake.depth.toFixed(2)}</td>
+      <td>${quake.tsunami === 1 ? 'Yes' : (quake.tsunami === 0 ? 'No' : 'N/A')}</td>
+      <td>${quake.location}</td>
+      <td>${quake.significance}</td>
+    `;
+    tableBody.appendChild(row);
+  });
+
+  updatePagination();
+  updateTableInfo();
+}
+
+// Update pagination controls
+function updatePagination() {
+  const totalPages = Math.ceil(filteredData.length / entriesPerPage);
+  const pagination = document.getElementById('tablePagination');
+  pagination.innerHTML = '';
+
+  // Previous button
+  const prevLi = document.createElement('li');
+  prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+  prevLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage - 1}">Previous</a>`;
+  pagination.appendChild(prevLi);
+
+  // Page numbers
+  for (let i = 1; i <= totalPages; i++) {
+    if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+      const li = document.createElement('li');
+      li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+      li.innerHTML = `<a class="page-link" href="#" data-page="${i}">${i}</a>`;
+      pagination.appendChild(li);
+    } else if (i === currentPage - 3 || i === currentPage + 3) {
+      const li = document.createElement('li');
+      li.className = 'page-item disabled';
+      li.innerHTML = '<a class="page-link" href="#">...</a>';
+      pagination.appendChild(li);
+    }
+  }
+
+  // Next button
+  const nextLi = document.createElement('li');
+  nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+  nextLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage + 1}">Next</a>`;
+  pagination.appendChild(nextLi);
+}
+
+// Update table information
+function updateTableInfo() {
+  const start = (currentPage - 1) * entriesPerPage + 1;
+  const end = Math.min(currentPage * entriesPerPage, filteredData.length);
+  document.getElementById('tableInfo').textContent = 
+    `Showing ${start} to ${end} of ${filteredData.length} entries`;
+}
+
+// Search functionality
+function handleSearch() {
+  const searchTerm = document.getElementById('dataSearch').value.toLowerCase();
+  filteredData = earthquakeData.filter(quake => 
+    Object.values(quake).some(value => 
+      String(value).toLowerCase().includes(searchTerm)
+    )
+  );
+  currentPage = 1;
+  updateTable();
+}
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', () => {
+  // ... existing event listeners ...
+
+  // Data table event listeners
+  document.getElementById('dataSearch').addEventListener('input', handleSearch);
+  
+  document.getElementById('dataEntries').addEventListener('change', (e) => {
+    entriesPerPage = parseInt(e.target.value);
+    currentPage = 1;
+    updateTable();
+  });
+
+  document.getElementById('tablePagination').addEventListener('click', (e) => {
+    e.preventDefault();
+    if (e.target.classList.contains('page-link')) {
+      const page = parseInt(e.target.dataset.page);
+      if (!isNaN(page) && page !== currentPage) {
+        currentPage = page;
+        updateTable();
+      }
+    }
+  });
+
+  // Load data when Data tab is clicked
+  document.getElementById('data-tab').addEventListener('click', () => {
+    if (earthquakeData.length === 0) {
+      loadEarthquakeData();
+    }
+  });
+});

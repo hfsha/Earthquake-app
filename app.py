@@ -236,6 +236,19 @@ def api_predict():
         print(f"Error during prediction: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/api/earthquake-data')
+def get_earthquake_data():
+    try:
+        # Read the CSV file
+        df = pd.read_csv('earthquake_cleaned.csv')
+        
+        # Convert DataFrame to list of dictionaries
+        data = df.to_dict('records')
+        
+        return jsonify(data)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     # In a production scenario, use a more robust server like Gunicorn or uWSGI
     # For development, debug=True is helpful but not recommended for production

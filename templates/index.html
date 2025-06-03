@@ -38,6 +38,9 @@
     <li class="nav-item" role="presentation">
       <button class="nav-link text-uppercase fw-semibold fs-6" id="prediction-tab" data-bs-toggle="tab" data-bs-target="#prediction" type="button" role="tab" aria-controls="prediction" aria-selected="false">Prediction</button>
     </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link text-uppercase fw-semibold fs-6" id="data-tab" data-bs-toggle="tab" data-bs-target="#data" type="button" role="tab" aria-controls="data" aria-selected="false">Data</button>
+    </li>
   </ul>
 
   <div class="tab-content pt-4" id="mainTabsContent">
@@ -312,6 +315,51 @@
           </div>
         </form>
         <div id="result" class="mt-5 text-center neumorphic-result"></div>
+      </div>
+    </div>
+
+    <!-- Data Tab -->
+    <div class="tab-pane fade" id="data" role="tabpanel" aria-labelledby="data-tab">
+      <div class="card shadow p-4 neumorphic-card rounded-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h5 class="mb-0 fw-semibold">Earthquake Dataset</h5>
+          <div class="d-flex gap-2">
+            <input type="text" id="dataSearch" class="form-control neumorphic-input" placeholder="Search...">
+            <select id="dataEntries" class="form-select neumorphic-input">
+              <option value="10">10 entries</option>
+              <option value="25">25 entries</option>
+              <option value="50">50 entries</option>
+              <option value="100">100 entries</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table id="earthquakeTable" class="table table-hover">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Latitude</th>
+                <th>Longitude</th>
+                <th>Magnitude</th>
+                <th>Depth</th>
+                <th>Tsunami</th>
+                <th>Location</th>
+                <th>Significance</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Data will be populated by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mt-3">
+          <div id="tableInfo" class="text-muted">
+            Showing 1 to 10 of 100 entries
+          </div>
+          <div id="tablePagination" class="pagination">
+            <!-- Pagination will be added by JavaScript -->
+          </div>
+        </div>
       </div>
     </div>
 

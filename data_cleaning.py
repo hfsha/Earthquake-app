@@ -2,6 +2,13 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 import re
+from geopy.geocoders import Nominatim
+from geopy.extra.rate_limiter import RateLimiter
+
+# Initialize Nominatim geocoder with a user agent and rate limiter
+geolocator = Nominatim(user_agent="earthquake_app_geocoding")
+# Rate limit requests to 1 second between calls to comply with Nominatim policy
+geocode = RateLimiter(geolocator.reverse, min_delay_seconds=1)
 
 def extract_magnitude_from_title(title):
     """Extract magnitude from title using regex"""
@@ -68,11 +75,61 @@ def clean_earthquake_data(input_file, output_file):
     
     # Clean country data - use location_country if country is missing
     df['country'] = df['country'].fillna(df['location_country'])
-    df['country'] = df['country'].fillna('Unknown')
+    # Ensure 'location' is treated case-insensitively for 'unknown'
+    df['country'] = df['country'].replace('unknown', 'Unknown', regex=True) # Replace lowercase 'unknown' first
+    df['country'] = df['country'].fillna('Unknown') # Fill remaining NaNs
     
     # Clean continent data
     df['continent'] = df['continent'].fillna('Unknown')
     
+    # --- Geocode 'Unknown' locations using Latitude and Longitude ---
+    print("Attempting to geocode unknown locations...")
+    # Look for both 'Unknown' and 'unknown' if not already handled
+    unknown_locations_mask = df['location'].str.lower() == 'unknown'
+    unknown_count_before = unknown_locations_mask.sum()
+    print(f"Found {unknown_count_before} rows with Unknown location.")
+
+    if unknown_count_before > 0:
+        # Filter DataFrame to only include rows needing geocoding
+        df_to_geocode = df[unknown_locations_mask].copy()
+
+        locations_update = []
+        # Use iterrows is generally discouraged for large dataframes due to performance,
+        # but for geocoding external API calls, it's often simpler to handle row by row.
+        # For very large datasets, consider batch geocoding if the service supports it.
+        for index, row in df_to_geocode.iterrows():
+            lat = row['latitude']
+            lon = row['longitude']
+            location_name = 'Unknown' # Default if geocoding fails
+            
+            # Ensure lat/lon are valid numbers before attempting to geocode
+            if pd.notnull(lat) and pd.notnull(lon) and isinstance(lat, (int, float)) and isinstance(lon, (int, float)):
+                try:
+                    # Use the RateLimiter wrapper for geocoding (coords to address)
+                    location = geocode(f"{lat}, {lon}", language='en')
+                    if location and location.address:
+                         # Use the full address returned by the geocoder
+                         location_name = location.address
+                         # print(f"Geocoded {lat},{lon} to {location_name}") # Optional: print each geocoded location
+                    # else: print(f"Could not geocode {lat},{lon}") # Optional: print failures
+
+                except Exception as e:
+                    # print(f"Error geocoding {lat},{lon}: {e}") # Optional: print errors
+                    location_name = 'Unknown' # Keep as Unknown on error
+            # else: print(f"Invalid lat/lon for geocoding at index {index}: {lat}, {lon}") # Optional: print invalid coords
+                 
+            # Store update information
+            locations_update.append({'index': index, 'location': location_name})
+
+        # Update the original DataFrame with geocoded locations
+        for loc_info in locations_update:
+             # Use .loc for label-based indexing
+             df.loc[loc_info['index'], 'location'] = loc_info['location']
+             
+        unknown_count_after = (df['location'].str.lower() == 'unknown').sum() # Check case-insensitively again
+        print(f"Finished geocoding. {unknown_count_before - unknown_count_after} locations updated, {unknown_count_after} remain Unknown.")
+    # ------------------------------------------------------------------
+
     # Create magnitude categories with more detailed ranges
     df['magnitude_category'] = pd.cut(
         df['magnitude'],
@@ -117,11 +174,11 @@ def clean_earthquake_data(input_file, output_file):
     )
     
     # Remove rows with missing values in essential columns
-    essential_columns = ['magnitude', 'depth', 'latitude', 'longitude', 'tsunami']
+    essential_columns = ['magnitude', 'depth', 'latitude', 'longitude', 'tsunami', 'location']
     df = df.dropna(subset=essential_columns)
     
     # Calculate additional features
-    df['magnitude_depth_ratio'] = df['magnitude'] / df['depth']
+    df['magnitude_depth_ratio'] = df.apply(lambda row: row['magnitude'] / row['depth'] if row['depth'] != 0 else 0, axis=1)
     df['is_coastal'] = df['depth'] < 50
     
     # Save cleaned dataset
@@ -138,17 +195,19 @@ def clean_earthquake_data(input_file, output_file):
     print(f"Number of countries affected: {df['country'].nunique()}")
     print(f"Number of continents affected: {df['continent'].nunique()}")
     print("\nMagnitude Distribution:")
-    print(df['magnitude_category'].value_counts())
+    print(df['magnitude_category'].astype(str).value_counts().sort_index())
     print("\nDepth Distribution:")
-    print(df['depth_category'].value_counts())
+    print(df['depth_category'].astype(str).value_counts().sort_index())
     print("\nAlert Level Distribution:")
-    print(df['alert_level'].value_counts())
+    print(df['alert_level'].astype(str).value_counts().sort_index())
+    print("\nMissing values after cleaning:")
+    print(df.isnull().sum()[df.isnull().sum() > 0])
     
     return df
 
 if __name__ == "__main__":
     # Clean the dataset
     df = clean_earthquake_data(
-        'data/earthquake_1995-2023.csv',
-        'data/earthquake_cleaned.csv'
+        'Earthquake-app/data/earthquake_1995-2023.csv',
+        'Earthquake-app/data/earthquake_cleaned.csv'
     ) 
