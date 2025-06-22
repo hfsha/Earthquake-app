@@ -2,8 +2,9 @@
 <html lang="en" >
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Earthquake Analytics Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='assets/images/logo2.png.png') }}">
 
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
@@ -36,7 +37,7 @@
 
   <ul class="nav nav-tabs" id="mainTabs" role="tablist">
     <li class="nav-item" role="presentation">
-      <button class="nav-link active text-uppercase fw-semibold fs-6" id="visualization-tab" data-bs-toggle="tab" data-bs-target="#visualization" type="button" role="tab" aria-controls="visualization" aria-selected="true">Visualization</button>
+      <button class="nav-link active text-uppercase fw-semibold fs-6" id="visualization-tab" data-bs-toggle="tab" data-bs-target="#visualization" type="button" role="tab" aria-controls="visualization" aria-selected="true">Dashboard</button>
     </li>
     <li class="nav-item" role="presentation">
       <button class="nav-link text-uppercase fw-semibold fs-6" id="prediction-tab" data-bs-toggle="tab" data-bs-target="#prediction" type="button" role="tab" aria-controls="prediction" aria-selected="false">Prediction</button>
@@ -313,74 +314,80 @@
 
     <!-- Prediction Tab -->
     <div class="tab-pane fade" id="prediction" role="tabpanel" aria-labelledby="prediction-tab">
-      <div class="card shadow p-5 mx-auto neumorphic-card" style="max-width: 550px;">
-        <h3 class="mb-5 text-center fw-bold">Predict Earthquake Impact</h3>
-        <h4 class="mb-4 text-center">Tsunami Prediction</h4>
-        <p class="text-center text-muted mb-4">Enter earthquake details to predict the likelihood of a tsunami event.</p>
-        
-        <form id="predict-form" class="row g-3" novalidate>
-          <!-- Magnitude -->
-          <div class="col-md-6">
-            <label for="magnitude" class="form-label">Magnitude</label>
-            <input type="number" class="form-control" id="magnitude" placeholder="e.g., 7.2" step="0.1" required>
-            <div class="invalid-feedback">Please enter a valid magnitude.</div>
-          </div>
-          
-          <!-- Depth -->
-          <div class="col-md-6">
-            <label for="depth" class="form-label">Depth (km)</label>
-            <input type="number" class="form-control" id="depth" placeholder="e.g., 10.0" step="0.1" required>
-            <div class="invalid-feedback">Please enter a valid depth.</div>
-          </div>
+      <div class="container py-5">
+        <div class="row">
+          <div class="col-lg-7 col-md-9 mx-auto">
+            <div class="card shadow p-4 p-md-5 rounded-4 border-0">
+              <h3 class="text-center fw-bold">Predict Earthquake Impact</h3>
+              <h5 class="text-center text-muted mb-4 fw-normal">Tsunami Prediction</h5>
+              
+              <form id="predict-form" class="row g-3" novalidate>
+                <!-- Magnitude -->
+                <div class="col-md-6">
+                  <label for="magnitude" class="form-label">Magnitude</label>
+                  <input type="number" class="form-control" id="magnitude" placeholder="e.g., 7.2" step="0.1" required>
+                  <div class="invalid-feedback">Please enter a valid magnitude.</div>
+                </div>
+                
+                <!-- Depth -->
+                <div class="col-md-6">
+                  <label for="depth" class="form-label">Depth (km)</label>
+                  <input type="number" class="form-control" id="depth" placeholder="e.g., 10.0" step="0.1" required>
+                  <div class="invalid-feedback">Please enter a valid depth.</div>
+                </div>
 
-          <!-- Latitude -->
-          <div class="col-md-6">
-            <label for="latitude" class="form-label">Latitude</label>
-            <input type="number" class="form-control" id="latitude" placeholder="e.g., 35.68" step="0.01" required>
-            <div class="invalid-feedback">Please enter a valid latitude.</div>
-          </div>
+                <!-- Latitude -->
+                <div class="col-md-6">
+                  <label for="latitude" class="form-label">Latitude</label>
+                  <input type="number" class="form-control" id="latitude" placeholder="e.g., 35.68" step="0.01" required>
+                  <div class="invalid-feedback">Please enter a valid latitude.</div>
+                </div>
 
-          <!-- Longitude -->
-          <div class="col-md-6">
-            <label for="longitude" class="form-label">Longitude</label>
-            <input type="number" class="form-control" id="longitude" placeholder="e.g., 139.76" step="0.01" required>
-            <div class="invalid-feedback">Please enter a valid longitude.</div>
-          </div>
+                <!-- Longitude -->
+                <div class="col-md-6">
+                  <label for="longitude" class="form-label">Longitude</label>
+                  <input type="number" class="form-control" id="longitude" placeholder="e.g., 139.76" step="0.01" required>
+                  <div class="invalid-feedback">Please enter a valid longitude.</div>
+                </div>
 
-          <!-- Significance -->
-          <div class="col-md-6">
-            <label for="sig" class="form-label">Significance</label>
-            <input type="number" class="form-control" id="sig" placeholder="e.g., 800" step="1" required>
-            <div class="invalid-feedback">Please enter a valid significance value.</div>
+                <!-- Significance -->
+                <div class="col-md-6">
+                  <label for="sig" class="form-label">Significance</label>
+                  <input type="number" class="form-control" id="sig" placeholder="e.g., 800" step="1" required>
+                  <div class="invalid-feedback">Please enter a valid significance value.</div>
+                </div>
+                
+                <!-- Magnitude Type -->
+                <div class="col-md-6">
+                  <label for="magType" class="form-label">Magnitude Type</label>
+                  <select class="form-select" id="magType" required>
+                    <option selected disabled value="">Choose...</option>
+                    <option>mww</option>
+                    <option>mwb</option>
+                    <option>ms</option>
+                    <option>mb</option>
+                    <option>ml</option>
+                    <option>mw</option>
+                    <option>md</option>
+                  </select>
+                  <div class="invalid-feedback">Please select a magnitude type.</div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="col-12 mt-4 d-grid gap-2 d-sm-flex justify-content-sm-center">
+                  <button type="button" id="clearBtn" class="btn btn-outline-secondary btn-lg">Clear</button>
+                  <button type="submit" class="btn btn-info btn-lg text-white" id="predictBtn">
+                    <span class="btn-text">Predict Impact</span>
+                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                  </button>
+                </div>
+              </form>
+
+              <!-- Result Div -->
+              <div id="result" class="mt-4"></div>
+            </div>
           </div>
-          
-          <!-- Magnitude Type -->
-          <div class="col-md-6">
-            <label for="magType" class="form-label">Magnitude Type</label>
-            <select class="form-select" id="magType" required>
-              <option selected disabled value="">Choose...</option>
-              <option>mww</option>
-              <option>mwb</option>
-              <option>ms</option>
-              <option>mb</option>
-              <option>ml</option>
-              <option>mw</option>
-              <option>md</option>
-              <!-- Add other types if necessary -->
-            </select>
-            <div class="invalid-feedback">Please select a magnitude type.</div>
-          </div>
-          
-          <!-- Action Buttons -->
-          <div class="col-12 mt-4 text-center">
-            <button type="button" id="clearBtn" class="btn btn-outline-secondary neumorphic-btn flex-grow-1">Clear</button>
-            <button type="submit" class="btn btn-primary neumorphic-btn flex-grow-1 position-relative" id="predictBtn">
-              <span class="btn-text">Predict Impact</span>
-              <span class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
-            </button>
-          </div>
-        </form>
-        <div id="result" class="mt-5 text-center neumorphic-result"></div>
+        </div>
       </div>
     </div>
 

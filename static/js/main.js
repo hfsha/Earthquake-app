@@ -1400,7 +1400,7 @@ function initPrediction() {
     } finally {
       predictBtn.disabled = false;
       spinner.classList.add('d-none');
-      btnText.textContent = 'Predict';
+      btnText.textContent = 'Predict Impact';
       resultDiv.classList.add('visible');
     }
   });
