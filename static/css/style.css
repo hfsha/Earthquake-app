@@ -1050,3 +1050,125 @@ body.dark-mode .summary-card h3 {
 #filterOffcanvas {
   --bs-offcanvas-width: 450px;
 }
+
+/* Heatmap specific styles */
+.heatmap-legend {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  background: var(--surface);
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.legend-color {
+  width: 200px;
+  height: 20px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+
+.legend-text {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+/* Heatmap controls styling */
+.form-range {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--border);
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.form-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--primary);
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.form-range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--primary);
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.form-check-input:checked {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+/* Heatmap container styling */
+#heatmap {
+  position: relative;
+  background: var(--map-background);
+  border: 1px solid var(--border);
+}
+
+/* Heatmap overlay controls */
+.heatmap-controls {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+  background: var(--surface);
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  min-width: 200px;
+}
+
+.heatmap-controls h6 {
+  margin-bottom: 10px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.heatmap-controls .form-check {
+  margin-bottom: 8px;
+}
+
+.heatmap-controls .form-check-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.marker-legend {
+  padding: 10px;
+  background: var(--surface);
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  font-size: 0.85rem;
+}
+
+.marker-legend .legend-item {
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+}
+
+.marker-legend .legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 8px;
+  display: inline-block;
+}

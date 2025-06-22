@@ -74,8 +74,92 @@
         </div>
 
         <div class="card shadow p-4 mb-4 rounded-4">
-          <h5 class="mb-3 fw-semibold">Earthquake Distribution Map</h5>
-          <div id="map" style="height: 480px; border-radius: 12px;"></div>
+          <h5 class="mb-3 fw-semibold">Earthquake Heatmap Analysis</h5>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="heatmapMetric" class="form-label fw-semibold">Heatmap Intensity Metric</label>
+              <select class="form-select neumorphic-input" id="heatmapMetric">
+                <option value="magnitude">Magnitude</option>
+                <option value="depth">Depth</option>
+                <option value="significance">Significance</option>
+                <option value="count">Event Count</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label for="heatmapRadius" class="form-label fw-semibold">Heatmap Radius</label>
+              <input type="range" class="form-range" id="heatmapRadius" min="5" max="50" value="15">
+              <small class="text-muted" id="radiusValue">15</small>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="heatmapBlur" class="form-label fw-semibold">Blur Intensity</label>
+              <input type="range" class="form-range" id="heatmapBlur" min="5" max="25" value="10">
+              <small class="text-muted" id="blurValue">10</small>
+            </div>
+            <div class="col-md-6">
+              <label for="heatmapMaxZoom" class="form-label fw-semibold">Max Zoom Level</label>
+              <input type="range" class="form-range" id="heatmapMaxZoom" min="10" max="18" value="15">
+              <small class="text-muted" id="maxZoomValue">15</small>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="showHeatmap" checked>
+                <label class="form-check-label fw-semibold" for="showHeatmap">
+                  Show Heatmap Layer
+                </label>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="showMarkers" checked>
+                <label class="form-check-label fw-semibold" for="showMarkers">
+                  Show Individual Markers
+                </label>
+              </div>
+            </div>
+          </div>
+          <div id="heatmap" style="height: 480px; border-radius: 12px;"></div>
+          <div class="mt-3 d-flex justify-content-between align-items-center">
+            <div class="heatmap-legend">
+              <div class="legend-item">
+                <span class="legend-color" style="background: linear-gradient(to right, #00f, #0ff, #0f0, #ff0, #f00);"></span>
+                <span class="legend-text">Low Intensity → High Intensity</span>
+              </div>
+            </div>
+            <div class="marker-legend">
+                <h6 class="fw-semibold fs-6 mb-2">Marker Magnitude</h6>
+                <div class="legend-item"><span class="legend-dot" style="background-color: #FF3D00;"></span>Critical (7.0+)</div>
+                <div class="legend-item"><span class="legend-dot" style="background-color: #E91E63;"></span>High (6.0-6.9)</div>
+                <div class="legend-item"><span class="legend-dot" style="background-color: #FFC107;"></span>Medium (4.5-5.9)</div>
+                <div class="legend-item"><span class="legend-dot" style="background-color: #00BCD4;"></span>Low (&lt;4.5)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Correlation Heatmap Section -->
+        <div class="card shadow p-4 mb-4 rounded-4">
+          <h5 class="mb-3 fw-semibold">Earthquake Parameters Correlation Matrix</h5>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="correlationMethod" class="form-label fw-semibold">Correlation Method</label>
+              <select class="form-select neumorphic-input" id="correlationMethod">
+                <option value="pearson">Pearson Correlation</option>
+                <option value="spearman">Spearman Rank Correlation</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="showCorrelationValues" checked>
+                <label class="form-check-label fw-semibold" for="showCorrelationValues">
+                  Show Correlation Values
+                </label>
+              </div>
+            </div>
+          </div>
+          <div id="correlation-heatmap" style="height: 400px;"></div>
         </div>
 
         <div class="row g-4 mb-4">
@@ -231,18 +315,64 @@
     <div class="tab-pane fade" id="prediction" role="tabpanel" aria-labelledby="prediction-tab">
       <div class="card shadow p-5 mx-auto neumorphic-card" style="max-width: 550px;">
         <h3 class="mb-5 text-center fw-bold">Predict Earthquake Impact</h3>
-        <form id="predict-form" novalidate autocomplete="off" class="d-flex flex-column gap-4">
-          <input type="number" class="form-control neumorphic-input" placeholder="Magnitude" step="0.1" min="0" max="10" id="magnitude" required>
-          <input type="number" class="form-control neumorphic-input" placeholder="Depth (km)" step="1" min="0" id="depth" required>
-          <select class="form-select neumorphic-input" id="type" required>
-            <option value="">Select Type</option>
-            <option value="Earthquake">Earthquake</option>
-            <option value="Explosion">Explosion</option>
-            <option value="Nuclear Explosion">Nuclear Explosion</option>
-            <option value="Rock Burst">Rock Burst</option>
-          </select>
+        <h4 class="mb-4 text-center">Tsunami Prediction</h4>
+        <p class="text-center text-muted mb-4">Enter earthquake details to predict the likelihood of a tsunami event.</p>
+        
+        <form id="predict-form" class="row g-3" novalidate>
+          <!-- Magnitude -->
+          <div class="col-md-6">
+            <label for="magnitude" class="form-label">Magnitude</label>
+            <input type="number" class="form-control" id="magnitude" placeholder="e.g., 7.2" step="0.1" required>
+            <div class="invalid-feedback">Please enter a valid magnitude.</div>
+          </div>
+          
+          <!-- Depth -->
+          <div class="col-md-6">
+            <label for="depth" class="form-label">Depth (km)</label>
+            <input type="number" class="form-control" id="depth" placeholder="e.g., 10.0" step="0.1" required>
+            <div class="invalid-feedback">Please enter a valid depth.</div>
+          </div>
 
-          <div class="d-flex gap-3">
+          <!-- Latitude -->
+          <div class="col-md-6">
+            <label for="latitude" class="form-label">Latitude</label>
+            <input type="number" class="form-control" id="latitude" placeholder="e.g., 35.68" step="0.01" required>
+            <div class="invalid-feedback">Please enter a valid latitude.</div>
+          </div>
+
+          <!-- Longitude -->
+          <div class="col-md-6">
+            <label for="longitude" class="form-label">Longitude</label>
+            <input type="number" class="form-control" id="longitude" placeholder="e.g., 139.76" step="0.01" required>
+            <div class="invalid-feedback">Please enter a valid longitude.</div>
+          </div>
+
+          <!-- Significance -->
+          <div class="col-md-6">
+            <label for="sig" class="form-label">Significance</label>
+            <input type="number" class="form-control" id="sig" placeholder="e.g., 800" step="1" required>
+            <div class="invalid-feedback">Please enter a valid significance value.</div>
+          </div>
+          
+          <!-- Magnitude Type -->
+          <div class="col-md-6">
+            <label for="magType" class="form-label">Magnitude Type</label>
+            <select class="form-select" id="magType" required>
+              <option selected disabled value="">Choose...</option>
+              <option>mww</option>
+              <option>mwb</option>
+              <option>ms</option>
+              <option>mb</option>
+              <option>ml</option>
+              <option>mw</option>
+              <option>md</option>
+              <!-- Add other types if necessary -->
+            </select>
+            <div class="invalid-feedback">Please select a magnitude type.</div>
+          </div>
+          
+          <!-- Action Buttons -->
+          <div class="col-12 mt-4 text-center">
             <button type="button" id="clearBtn" class="btn btn-outline-secondary neumorphic-btn flex-grow-1">Clear</button>
             <button type="submit" class="btn btn-primary neumorphic-btn flex-grow-1 position-relative" id="predictBtn">
               <span class="btn-text">Predict Impact</span>
@@ -317,6 +447,9 @@
 
 <!-- Leaflet Fullscreen -->
 <script src="https://unpkg.com/leaflet-fullscreen@latest/dist/Leaflet.fullscreen.js"></script>
+
+<!-- Leaflet.heat plugin -->
+<script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
 
 <!-- Bootstrap Offcanvas -->
 <!-- Bootstrap bundle includes this, but listing for clarity -->

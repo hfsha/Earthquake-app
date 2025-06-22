@@ -4,6 +4,16 @@ let currentPage = 1;
 let entriesPerPage = 10;
 let earthquakeData = [];
 
+// Helper function to get color based on magnitude
+function magnitudeColor(magnitude, fill = false) {
+  // Handle potential NaN or null magnitude
+  const mag = magnitude || 0;
+  if (mag >= 7.0) return fill ? 'rgba(255, 61, 0, 0.7)' : '#FF3D00'; // Critical (Red)
+  else if (mag >= 6.0) return fill ? 'rgba(233, 30, 99, 0.7)' : '#E91E63'; // High (Pink/Red)
+  else if (mag >= 4.5) return fill ? 'rgba(255, 193, 7, 0.7)' : '#FFC107'; // Medium (Orange)
+  else return fill ? 'rgba(0, 188, 212, 0.7)' : '#00BCD4'; // Low (Cyan)
+}
+
 // Dark Mode Toggle
 document.addEventListener('DOMContentLoaded', function() {
     const darkModeToggle = document.getElementById('darkModeToggle');
@@ -79,7 +89,8 @@ async function fetchData() {
     timeSeriesPlot(filteredData);
     typePieChart(filteredData);
     regionsBarChart(filteredData);
-    initMap(filteredData);
+    initHeatmap(filteredData); // Initialize enhanced heatmap
+    correlationHeatmap(filteredData); // Initialize correlation heatmap
     depthDistributionPlots(filteredData);
     sigDistributionPlots(filteredData);
     magDepthScatterPlot(filteredData); // The preferred Magnitude vs Depth plot
@@ -509,6 +520,15 @@ function initMap(data) {
       return;
   }
 
+  // Create and add Heatmap layer
+  const heatData = validData.map(d => [d.latitude, d.longitude, d.magnitude / 5]); // Use magnitude as intensity, scaled down
+  const heat = L.heatLayer(heatData, {
+    radius: 15,
+    blur: 10,
+    maxZoom: 15,
+    // gradient: {0.4: 'blue', 0.65: 'lime', 1: 'red'} // Example gradient
+  }).addTo(map);
+
   // Remove existing markers before adding new ones
   if (map) {
       map.eachLayer(layer => {
@@ -517,7 +537,6 @@ function initMap(data) {
           }
       });
   }
-
 
   validData.forEach(d => {
     const color = magnitudeColor(d.magnitude);
@@ -538,14 +557,408 @@ function initMap(data) {
    console.log("Map markers added:", validData.length);
 }
 
-// Helper function to get color based on magnitude
-function magnitudeColor(magnitude, fill = false) {
-  // Handle potential NaN or null magnitude
-  const mag = magnitude || 0;
-  if (mag >= 7.0) return fill ? 'rgba(255, 61, 0, 0.7)' : '#FF3D00'; // Critical (Red)
-  else if (mag >= 6.0) return fill ? 'rgba(233, 30, 99, 0.7)' : '#E91E63'; // High (Pink/Red)
-  else if (mag >= 4.5) return fill ? 'rgba(255, 193, 7, 0.7)' : '#FFC107'; // Medium (Orange)
-  else return fill ? 'rgba(0, 188, 212, 0.7)' : '#00BCD4'; // Low (Cyan)
+// Enhanced Heatmap functionality
+let heatmapMap;
+let heatmapLayer;
+let markerLayer;
+let currentHeatmapData = [];
+
+function initHeatmap(data) {
+  console.log("initHeatmap called with data:", data.length);
+
+  const heatmapDiv = document.getElementById('heatmap');
+  if (!heatmapDiv) {
+      console.warn("Heatmap div not found.");
+      return;
+  }
+
+  if (heatmapMap) {
+    heatmapMap.remove();
+    heatmapMap = null;
+  }
+
+  heatmapMap = L.map('heatmap', { fullscreenControl: true }).setView([20, 0], 2);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(heatmapMap);
+
+  // Filter out records with missing or invalid lat/lon
+  const validData = data.filter(d => d.latitude != null && d.longitude != null && !isNaN(d.latitude) && !isNaN(d.longitude));
+  console.log("Heatmap data after filtering invalid lat/lon:", validData.length);
+  
+  if (!validData || validData.length === 0) {
+      console.warn("No valid data points for heatmap");
+      return;
+  }
+
+  currentHeatmapData = validData;
+  
+  // Initialize layers
+  heatmapLayer = L.heatLayer([], { radius: 15, blur: 10, maxZoom: 15 });
+  markerLayer = L.layerGroup();
+  
+  // Add layers to map
+  heatmapLayer.addTo(heatmapMap);
+  markerLayer.addTo(heatmapMap);
+  
+  // Update heatmap with default settings
+  updateHeatmap();
+  
+  // Add event listeners for controls
+  addHeatmapEventListeners();
+}
+
+function updateHeatmap() {
+  if (!currentHeatmapData || currentHeatmapData.length === 0) return;
+
+  const metric = document.getElementById('heatmapMetric').value;
+  const radius = parseInt(document.getElementById('heatmapRadius').value);
+  const blur = parseInt(document.getElementById('heatmapBlur').value);
+  const maxZoom = parseInt(document.getElementById('heatmapMaxZoom').value);
+  const showHeatmap = document.getElementById('showHeatmap').checked;
+  const showMarkers = document.getElementById('showMarkers').checked;
+
+  // Clear existing layers
+  if (heatmapLayer) {
+    heatmapMap.removeLayer(heatmapLayer);
+  }
+  if (markerLayer) {
+    heatmapMap.removeLayer(markerLayer);
+  }
+
+  // Create new layers
+  heatmapLayer = L.heatLayer([], { 
+    radius: radius, 
+    blur: blur, 
+    maxZoom: maxZoom,
+    gradient: {
+      0.2: '#0000ff',   // Blue for low intensity
+      0.4: '#00ffff',   // Cyan
+      0.6: '#00ff00',   // Green
+      0.8: '#ffff00',   // Yellow
+      1.0: '#ff0000'    // Red for high intensity
+    }
+  });
+
+  markerLayer = L.layerGroup();
+
+  // Prepare heatmap data based on selected metric
+  let heatmapData = [];
+  let maxValue = 0;
+
+  if (metric === 'count') {
+    // Count earthquakes in each location (group by lat/lon)
+    const locationCounts = {};
+    currentHeatmapData.forEach(d => {
+      const key = `${d.latitude.toFixed(3)},${d.longitude.toFixed(3)}`;
+      locationCounts[key] = (locationCounts[key] || 0) + 1;
+    });
+    
+    Object.entries(locationCounts).forEach(([key, count]) => {
+      const [lat, lon] = key.split(',').map(Number);
+      heatmapData.push([lat, lon, count]);
+      maxValue = Math.max(maxValue, count);
+    });
+  } else {
+    // Use the selected metric value
+    currentHeatmapData.forEach(d => {
+      let value = 0;
+      switch (metric) {
+        case 'magnitude':
+          value = d.magnitude || 0;
+          break;
+        case 'depth':
+          value = d.depth || 0;
+          break;
+        case 'significance':
+          value = d.significance || 0;
+          break;
+      }
+      heatmapData.push([d.latitude, d.longitude, value]);
+      maxValue = Math.max(maxValue, value);
+    });
+  }
+
+  // Normalize values to 0-1 range for better visualization
+  if (maxValue > 0) {
+    heatmapData = heatmapData.map(([lat, lon, value]) => [lat, lon, value / maxValue]);
+  }
+
+  // Add heatmap layer if enabled
+  if (showHeatmap) {
+    heatmapLayer.setLatLngs(heatmapData);
+    heatmapLayer.addTo(heatmapMap);
+  }
+
+  // Add individual markers if enabled
+  if (showMarkers) {
+    currentHeatmapData.forEach(d => {
+      const color = magnitudeColor(d.magnitude);
+      const radius = Math.max(3, (d.magnitude || 0) * 1.5);
+
+      const marker = L.circleMarker([d.latitude, d.longitude], {
+        color: color,
+        fillColor: color,
+        fillOpacity: 0.7,
+        radius: radius,
+        weight: 1.5
+      })
+      .bindPopup(
+        `<b>Magnitude: ${typeof d.magnitude === 'number' ? d.magnitude.toFixed(2) : 'N/A'}</b><br>
+         Depth: ${typeof d.depth === 'number' ? d.depth.toFixed(2) : 'N/A'} km<br>
+         Significance: ${typeof d.significance === 'number' ? d.significance.toFixed(2) : 'N/A'}<br>
+         Location: ${d.location || 'N/A'}<br>
+         Time: ${d.date_time instanceof Date && !isNaN(d.date_time) ? d.date_time.toLocaleString() : 'N/A'}<br>
+         Tsunami: ${d.tsunami === 1 ? 'Yes' : (d.tsunami === 0 ? 'No' : 'N/A')}`
+      );
+      
+      markerLayer.addLayer(marker);
+    });
+    markerLayer.addTo(heatmapMap);
+  }
+
+  // Update legend based on metric
+  updateHeatmapLegend(metric, maxValue);
+}
+
+function updateHeatmapLegend(metric, maxValue) {
+  const legendText = document.querySelector('.legend-text');
+  if (legendText) {
+    let metricName = '';
+    let unit = '';
+    
+    switch (metric) {
+      case 'magnitude':
+        metricName = 'Magnitude';
+        unit = '';
+        break;
+      case 'depth':
+        metricName = 'Depth';
+        unit = ' km';
+        break;
+      case 'significance':
+        metricName = 'Significance';
+        unit = '';
+        break;
+      case 'count':
+        metricName = 'Event Count';
+        unit = ' events';
+        break;
+    }
+    
+    legendText.textContent = `${metricName}: 0${unit} → ${maxValue.toFixed(2)}${unit}`;
+  }
+}
+
+function addHeatmapEventListeners() {
+  // Metric selector
+  document.getElementById('heatmapMetric').addEventListener('change', updateHeatmap);
+  
+  // Range sliders
+  document.getElementById('heatmapRadius').addEventListener('input', function() {
+    document.getElementById('radiusValue').textContent = this.value;
+    updateHeatmap();
+  });
+  
+  document.getElementById('heatmapBlur').addEventListener('input', function() {
+    document.getElementById('blurValue').textContent = this.value;
+    updateHeatmap();
+  });
+  
+  document.getElementById('heatmapMaxZoom').addEventListener('input', function() {
+    document.getElementById('maxZoomValue').textContent = this.value;
+    updateHeatmap();
+  });
+  
+  // Checkboxes
+  document.getElementById('showHeatmap').addEventListener('change', updateHeatmap);
+  document.getElementById('showMarkers').addEventListener('change', updateHeatmap);
+}
+
+function updateHeatmapData(data) {
+  console.log("updateHeatmapData called with data:", data.length);
+  
+  // Filter out records with missing or invalid lat/lon
+  const validData = data.filter(d => d.latitude != null && d.longitude != null && !isNaN(d.latitude) && !isNaN(d.longitude));
+  console.log("updateHeatmapData - valid data points:", validData.length);
+  
+  if (!validData || validData.length === 0) {
+    console.warn("No valid data points for heatmap update");
+    return;
+  }
+
+  currentHeatmapData = validData;
+  updateHeatmap();
+}
+
+// Correlation Heatmap functionality
+function correlationHeatmap(data) {
+  console.log("correlationHeatmap called with data:", data.length);
+  
+  const chartDiv = document.getElementById('correlation-heatmap');
+  if (!chartDiv) {
+    console.warn("Correlation heatmap div not found.");
+    return;
+  }
+
+  // Filter out invalid data points
+  const validData = data.filter(d => 
+    d.magnitude != null && !isNaN(d.magnitude) &&
+    d.depth != null && !isNaN(d.depth) &&
+    d.significance != null && !isNaN(d.significance) &&
+    d.latitude != null && !isNaN(d.latitude) &&
+    d.longitude != null && !isNaN(d.longitude)
+  );
+  
+  console.log("correlationHeatmap - valid data points:", validData.length);
+  
+  if (validData.length === 0) {
+    console.warn("No valid data points for correlation heatmap");
+    if(chartDiv) Plotly.purge(chartDiv);
+    if(chartDiv) chartDiv.innerHTML = '<div class="no-data-message">No data available for Correlation Matrix</div>';
+    return;
+  }
+
+  // Prepare data for correlation analysis
+  const correlationData = {
+    magnitude: validData.map(d => d.magnitude),
+    depth: validData.map(d => d.depth),
+    significance: validData.map(d => d.significance),
+    latitude: validData.map(d => Math.abs(d.latitude)), // Use absolute latitude
+    longitude: validData.map(d => Math.abs(d.longitude)) // Use absolute longitude
+  };
+
+  const parameters = ['magnitude', 'depth', 'significance', 'latitude', 'longitude'];
+  const parameterLabels = ['Magnitude', 'Depth', 'Significance', 'Latitude', 'Longitude'];
+  
+  // Calculate correlation matrix
+  const correlationMatrix = [];
+  const method = document.getElementById('correlationMethod').value;
+  const showValues = document.getElementById('showCorrelationValues').checked;
+
+  for (let i = 0; i < parameters.length; i++) {
+    correlationMatrix[i] = [];
+    for (let j = 0; j < parameters.length; j++) {
+      if (i === j) {
+        correlationMatrix[i][j] = 1.0; // Perfect correlation with itself
+      } else {
+        correlationMatrix[i][j] = calculateCorrelation(
+          correlationData[parameters[i]], 
+          correlationData[parameters[j]], 
+          method
+        );
+      }
+    }
+  }
+
+  // Create heatmap trace
+  const trace = {
+    z: correlationMatrix,
+    x: parameterLabels,
+    y: parameterLabels,
+    type: 'heatmap',
+    colorscale: [
+      [0, '#0000ff'],    // Blue for negative correlations
+      [0.5, '#ffffff'],  // White for zero correlation
+      [1, '#ff0000']     // Red for positive correlations
+    ],
+    zmid: 0, // Center the colorscale at 0
+    showscale: true,
+    colorbar: {
+      title: 'Correlation Coefficient',
+      titleside: 'right',
+      thickness: 15,
+      len: 0.5
+    }
+  };
+
+  // Add text annotations if enabled
+  if (showValues) {
+    trace.text = correlationMatrix.map(row => 
+      row.map(val => val.toFixed(3))
+    );
+    trace.texttemplate = '%{text}';
+    trace.textfont = {
+      size: 12,
+      color: 'black'
+    };
+  }
+
+  const layout = {
+    title: `Earthquake Parameters Correlation Matrix (${method.charAt(0).toUpperCase() + method.slice(1)})`,
+    height: 400,
+    margin: { t: 50, r: 50, b: 50, l: 50 },
+    xaxis: {
+      title: 'Parameters',
+      tickangle: -45
+    },
+    yaxis: {
+      title: 'Parameters'
+    }
+  };
+
+  console.log("Plotting Correlation Heatmap with data:", correlationMatrix.length, "parameters");
+  if(chartDiv) Plotly.newPlot(chartDiv, [trace], layout, { responsive: true });
+}
+
+function calculateCorrelation(x, y, method) {
+  const n = x.length;
+  if (n !== y.length || n === 0) return 0;
+
+  if (method === 'pearson') {
+    // Calculate Pearson correlation coefficient
+    const sumX = x.reduce((a, b) => a + b, 0);
+    const sumY = y.reduce((a, b) => a + b, 0);
+    const sumXY = x.reduce((sum, xi, i) => sum + xi * y[i], 0);
+    const sumX2 = x.reduce((sum, xi) => sum + xi * xi, 0);
+    const sumY2 = y.reduce((sum, yi) => sum + yi * yi, 0);
+
+    const numerator = n * sumXY - sumX * sumY;
+    const denominator = Math.sqrt((n * sumX2 - sumX * sumX) * (n * sumY2 - sumY * sumY));
+    
+    return denominator === 0 ? 0 : numerator / denominator;
+  } else if (method === 'spearman') {
+    // Calculate Spearman rank correlation coefficient
+    const rankX = getRanks(x);
+    const rankY = getRanks(y);
+    
+    const sumD2 = rankX.reduce((sum, rx, i) => sum + Math.pow(rx - rankY[i], 2), 0);
+    const rs = 1 - (6 * sumD2) / (n * (n * n - 1));
+    
+    return rs;
+  }
+  
+  return 0;
+}
+
+function getRanks(arr) {
+  // Create array of indices sorted by values
+  const indices = arr.map((val, index) => ({ val, index }))
+    .sort((a, b) => a.val - b.val)
+    .map((item, rank) => ({ ...item, rank: rank + 1 }));
+  
+  // Handle ties by averaging ranks
+  const ranks = new Array(arr.length);
+  for (let i = 0; i < indices.length; i++) {
+    const current = indices[i];
+    let sumRank = current.rank;
+    let count = 1;
+    
+    // Check for ties
+    for (let j = i + 1; j < indices.length && indices[j].val === current.val; j++) {
+      sumRank += indices[j].rank;
+      count++;
+    }
+    
+    const avgRank = sumRank / count;
+    for (let j = 0; j < count; j++) {
+      ranks[indices[i + j].index] = avgRank;
+    }
+    i += count - 1;
+  }
+  
+  return ranks;
 }
 
 async function initDashboard() {
@@ -606,6 +1019,10 @@ async function initDashboard() {
     document.getElementById('thresholdValue').textContent = e.target.value;
     applyFilters(); // Re-apply filters to update anomaly chart
   });
+
+  // Add event listeners for heatmap controls
+  addHeatmapEventListeners();
+  addCorrelationHeatmapEventListeners();
   console.log("Dashboard initialization complete. Event listeners added."); // Log end of init
 }
 
@@ -862,7 +1279,8 @@ function applyFilters() {
 
   typePieChart(filteredData); // Magnitude Category Distribution
   regionsBarChart(filteredData);
-  initMap(filteredData);
+  updateHeatmapData(filteredData); // Update heatmap with filtered data
+  correlationHeatmap(filteredData); // Update correlation heatmap with filtered data
 
   // Distribution and Categorical charts
   depthDistributionPlots(filteredData);
@@ -923,9 +1341,10 @@ function initPrediction() {
     const inputData = {
       magnitude: parseFloat(document.getElementById('magnitude').value),
       depth: parseFloat(document.getElementById('depth').value),
-      type: document.getElementById('type').value,
-      // You might need other features depending on your model
-      // For now, let's just send magnitude, depth, and type
+      latitude: parseFloat(document.getElementById('latitude').value),
+      longitude: parseFloat(document.getElementById('longitude').value),
+      sig: parseFloat(document.getElementById('sig').value),
+      magType: document.getElementById('magType').value
     };
     
     console.log("Sending prediction data:", inputData);
@@ -950,8 +1369,8 @@ function initPrediction() {
       if (result.success) {
         // Assuming prediction is a string like 'High', 'Medium', 'Low'
         let colorClass = 'badge-low';
-        if (result.prediction === 'High') colorClass = 'badge-high';
-        else if (result.prediction === 'Medium') colorClass = 'badge-medium';
+        if (result.prediction === 'High Risk') colorClass = 'badge-high';
+        else if (result.prediction === 'Medium Risk') colorClass = 'badge-medium';
 
         // Use CSS variables directly in style attribute or apply CSS class
         // Using CSS classes is generally preferred for better styling management
@@ -975,7 +1394,7 @@ function initPrediction() {
       resultDiv.innerHTML = `
         <div class="alert alert-danger mt-3">
           <h4 class="alert-heading">Error</h4>
-          <p>${error.message}</p>
+          <p>${error.message || 'An unknown error occurred during prediction.'}</p>
         </div>
       `;
     } finally {
@@ -1768,3 +2187,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+
+// Add event listeners for correlation heatmap controls
+function addCorrelationHeatmapEventListeners() {
+  document.getElementById('correlationMethod').addEventListener('change', function() {
+    if (currentHeatmapData && currentHeatmapData.length > 0) {
+      correlationHeatmap(currentHeatmapData);
+    }
+  });
+  
+  document.getElementById('showCorrelationValues').addEventListener('change', function() {
+    if (currentHeatmapData && currentHeatmapData.length > 0) {
+      correlationHeatmap(currentHeatmapData);
+    }
+  });
+}
