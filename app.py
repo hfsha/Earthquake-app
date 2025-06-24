@@ -17,12 +17,10 @@ model_columns = None
 def load_essentials():
     global df, model, model_columns
     
-    # Build absolute paths from the app's root directory.
-    # This makes file loading reliable, no matter where the script is run from.
-    app_root = os.path.dirname(os.path.abspath(__file__))
-    data_path = os.path.join(app_root, 'data', 'earthquake_cleaned.csv')
-    model_path = os.path.join(app_root, 'models', 'earthquake_model.pkl')
-    columns_path = os.path.join(app_root, 'models', 'model_columns.pkl')
+    # Using the relative paths that worked in your environment
+    data_path = 'Earthquake-app/data/earthquake_cleaned.csv'
+    model_path = 'Earthquake-app/models/earthquake_model.pkl'
+    columns_path = 'Earthquake-app/models/model_columns.pkl'
     
     # Load earthquake data
     try:
@@ -54,11 +52,6 @@ def load_essentials():
         model_columns = None
 
 # --- Routes ---
-
-@app.before_first_request
-def before_first_request():
-    """Load data and model before the first request comes in."""
-    load_essentials()
 
 @app.route('/')
 def home():
@@ -100,5 +93,5 @@ def predict():
 
 # --- Main Execution ---
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    load_essentials()
+    app.run(debug=True, port=5000)
