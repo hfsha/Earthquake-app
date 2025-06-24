@@ -12,6 +12,9 @@
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
 
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
@@ -55,31 +58,31 @@
       <div class="col-lg-12">
         <div class="row gx-4 mb-4" id="summary-cards">
           <div class="col-md-4">
-            <div class="card neumorphic-card text-center p-4 summary-card">
+            <div class="card neumorphic-card text-center p-4 summary-card dashboard-summary-card">
               <h6 class="fw-semibold text-secondary">Total Earthquakes</h6>
-              <h3 class="mt-2 text-primary" id="totalEarthquakes">-</h3>
+              <h3 class="mt-2 text-gradient dashboard-main-number" id="totalEarthquakes">-</h3>
             </div>
           </div>
           <div class="col-md-4">
-            <div class="card neumorphic-card text-center p-4 summary-card">
+            <div class="card neumorphic-card text-center p-4 summary-card dashboard-summary-card">
               <h6 class="fw-semibold text-secondary">Average Magnitude</h6>
-              <h3 class="mt-2 text-success" id="avgMagnitude">-</h3>
+              <h3 class="mt-2 text-gradient dashboard-main-number" id="avgMagnitude">-</h3>
             </div>
           </div>
           <div class="col-md-4">
-            <div class="card neumorphic-card text-center p-4 summary-card">
+            <div class="card neumorphic-card text-center p-4 summary-card dashboard-summary-card">
               <h6 class="fw-semibold text-secondary">Average Depth (km)</h6>
-              <h3 class="mt-2 text-warning" id="avgDepth">-</h3>
+              <h3 class="mt-2 text-gradient dashboard-main-number" id="avgDepth">-</h3>
             </div>
           </div>
         </div>
 
-        <div class="card shadow p-4 mb-4 rounded-4">
-          <h5 class="mb-3 fw-semibold">Earthquake Heatmap Analysis</h5>
+        <div class="card shadow p-4 mb-4 rounded-4 dashboard-section-card neumorphic-card">
+          <h5 class="mb-3 fw-semibold text-gradient">Earthquake Heatmap Analysis</h5>
           <div class="row mb-3">
             <div class="col-md-6">
               <label for="heatmapMetric" class="form-label fw-semibold">Heatmap Intensity Metric</label>
-              <select class="form-select neumorphic-input" id="heatmapMetric">
+              <select class="form-select neumorphic-input dashboard-control" id="heatmapMetric">
                 <option value="magnitude">Magnitude</option>
                 <option value="depth">Depth</option>
                 <option value="significance">Significance</option>
@@ -88,41 +91,41 @@
             </div>
             <div class="col-md-6">
               <label for="heatmapRadius" class="form-label fw-semibold">Heatmap Radius</label>
-              <input type="range" class="form-range" id="heatmapRadius" min="5" max="50" value="15">
+              <input type="range" class="form-range neumorphic-slider dashboard-control" id="heatmapRadius" min="5" max="50" value="15">
               <small class="text-muted" id="radiusValue">15</small>
             </div>
           </div>
           <div class="row mb-3">
             <div class="col-md-6">
               <label for="heatmapBlur" class="form-label fw-semibold">Blur Intensity</label>
-              <input type="range" class="form-range" id="heatmapBlur" min="5" max="25" value="10">
+              <input type="range" class="form-range neumorphic-slider dashboard-control" id="heatmapBlur" min="5" max="25" value="10">
               <small class="text-muted" id="blurValue">10</small>
             </div>
             <div class="col-md-6">
               <label for="heatmapMaxZoom" class="form-label fw-semibold">Max Zoom Level</label>
-              <input type="range" class="form-range" id="heatmapMaxZoom" min="10" max="18" value="15">
+              <input type="range" class="form-range neumorphic-slider dashboard-control" id="heatmapMaxZoom" min="10" max="18" value="15">
               <small class="text-muted" id="maxZoomValue">15</small>
             </div>
           </div>
           <div class="row mb-3">
             <div class="col-md-6">
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="showHeatmap" checked>
+              <div class="form-check neumorphic-checkbox">
+                <input class="form-check-input dashboard-control" type="checkbox" id="showHeatmap" checked>
                 <label class="form-check-label fw-semibold" for="showHeatmap">
                   Show Heatmap Layer
                 </label>
               </div>
             </div>
             <div class="col-md-6">
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="showMarkers" checked>
+              <div class="form-check neumorphic-checkbox">
+                <input class="form-check-input dashboard-control" type="checkbox" id="showMarkers" checked>
                 <label class="form-check-label fw-semibold" for="showMarkers">
                   Show Individual Markers
                 </label>
               </div>
             </div>
           </div>
-          <div id="heatmap" style="height: 480px; border-radius: 12px;"></div>
+          <div id="heatmap" class="dashboard-map-container" style="height: 480px; border-radius: 12px;"></div>
           <div class="mt-3 d-flex justify-content-between align-items-center">
             <div class="heatmap-legend">
               <div class="legend-item">
@@ -140,136 +143,8 @@
           </div>
         </div>
 
-        <!-- Correlation Heatmap Section -->
-        <div class="card shadow p-4 mb-4 rounded-4">
-          <h5 class="mb-3 fw-semibold">Earthquake Parameters Correlation Matrix</h5>
-          <div class="row mb-3">
-            <div class="col-md-6">
-              <label for="correlationMethod" class="form-label fw-semibold">Correlation Method</label>
-              <select class="form-select neumorphic-input" id="correlationMethod">
-                <option value="pearson">Pearson Correlation</option>
-                <option value="spearman">Spearman Rank Correlation</option>
-              </select>
-            </div>
-            <div class="col-md-6">
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="showCorrelationValues" checked>
-                <label class="form-check-label fw-semibold" for="showCorrelationValues">
-                  Show Correlation Values
-                </label>
-              </div>
-            </div>
-          </div>
-          <div id="correlation-heatmap" style="height: 400px;"></div>
-        </div>
-
-        <div class="row g-4 mb-4">
-          <!-- Magnitude Category Distribution -->
-          <div class="col-md-6">
-            <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
-              <h6 class="mb-3 fw-semibold">Magnitude Category Distribution</h6>
-              <div id="chart-type-pie" style="height: 360px;"></div>
-            </div>
-          </div>
-
-          <!-- Existing Violin Plot -->
-           <div class="col-md-6">
-            <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
-              <h6 class="mb-3 fw-semibold">Magnitude Distribution</h6>
-              <div id="chart-violin" style="height: 360px;"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="row g-4 mb-4">
-          <!-- Top Affected Regions -->
-          <div class="col-md-12">
-            <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
-              <h6 class="mb-3 fw-semibold">Top Affected Regions</h6>
-              <div id="chart-regions-bar" style="height: 360px;"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="row g-4 mb-4">
-          <!-- New Distribution Plots -->
-          <div class="col-md-6">
-            <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
-              <h6 class="mb-3 fw-semibold">Earthquakes by Depth: Histogram</h6>
-              <div id="chart-depth-histogram" style="height: 300px;"></div>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
-              <h6 class="mb-3 fw-semibold">Earthquakes by Depth: Box & Whisker Plot</h6>
-              <div id="chart-depth-box" style="height: 300px;"></div>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
-              <h6 class="mb-3 fw-semibold">Earthquakes by Significance: Histogram</h6>
-              <div id="chart-sig-histogram" style="height: 300px;"></div>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
-              <h6 class="mb-3 fw-semibold">Earthquakes by Significance: Box & Whisker Plot</h6>
-              <div id="chart-sig-box" style="height: 300px;"></div>
-            </div>
-          </div>
-        </div>
-
-         <div class="row g-4 mb-4">
-          <!-- New Relationship Plots -->
-          <div class="col-md-6">
-            <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
-              <h6 class="mb-3 fw-semibold">Earthquakes: Magnitude vs Depth</h6>
-              <div id="chart-mag-depth" style="height: 360px;"></div>
-            </div>
-          </div>
-
-          <div class="col-md-6">
-            <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
-              <h6 class="mb-3 fw-semibold">Earthquakes: Magnitude vs Significance</h6>
-              <div id="chart-mag-sig" style="height: 360px;"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="row g-4 mb-4">
-          <!-- New Categorical Plots -->
-           <div class="col-md-6">
-            <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
-               <h6 class="mb-3 fw-semibold">Magnitude Measurement Type: Count</h6>
-               <div id="chart-mag-type-bar" style="height: 360px;"></div>
-             </div>
-           </div>
-          <div class="col-md-6">
-            <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
-              <h6 class="mb-3 fw-semibold">Magnitude Measurement Type: Percentage</h6>
-              <div id="chart-mag-type-pie" style="height: 360px;"></div>
-             </div>
-           </div>
-        </div>
-
-         <div class="row g-4 mb-4">
-           <!-- New Tsunami Analysis Plots -->
-           <div class="col-md-6">
-             <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
-               <h6 class="mb-3 fw-semibold">Tsunami Occurrence: Percentage</h6>
-               <div id="chart-tsunami-pie" style="height: 300px;"></div>
-             </div>
-           </div>
-           <div class="col-md-6">
-             <div class="card shadow p-3 neumorphic-card h-100 rounded-4">
-               <h6 class="mb-3 fw-semibold">Tsunami Occurrence: Count</h6>
-               <div id="chart-tsunami-bar" style="height: 300px;"></div>
-             </div>
-           </div>
-         </div>
-
-        <div class="card shadow p-4 neumorphic-card mt-4 rounded-4">
-          <h5 class="mb-3 fw-semibold">Earthquake Frequency Over Time</h5>
+        <div class="card shadow p-4 neumorphic-card mt-4 mb-4 rounded-4 dashboard-section-card">
+          <h5 class="mb-3 fw-semibold text-gradient">Earthquake Frequency Over Time</h5>
           <div class="time-series-controls mb-3">
             <button class="time-series-btn active" data-period="day">Daily</button>
             <button class="time-series-btn" data-period="week">Weekly</button>
@@ -279,8 +154,151 @@
           <div id="chart-time-series" style="height: 360px;"></div>
         </div>
 
-        <div class="card shadow p-4 neumorphic-card mt-4 rounded-4">
-          <h5 class="mb-3 fw-semibold">Anomaly Detection</h5>
+        <!-- Geographical Analysis Section -->
+        <div class="card shadow p-4 mb-4 rounded-4 dashboard-section-card neumorphic-card">
+          <h5 class="mb-4 fw-semibold text-gradient">Geographical Analysis</h5>
+          <div class="row g-4">
+            <div class="col-lg-12">
+              <div class="card neumorphic-inner-card h-100 p-3">
+                <h6 class="mb-3 fw-semibold text-secondary">Top Affected Regions</h6>
+                <div id="chart-regions-bar" style="height: 360px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Magnitude Analysis Section -->
+        <div class="card shadow p-4 mb-4 rounded-4 dashboard-section-card neumorphic-card">
+          <h5 class="mb-4 fw-semibold text-gradient">Magnitude Analysis</h5>
+          <div class="row g-4">
+            <div class="col-lg-6">
+              <div class="card neumorphic-inner-card h-100 p-3">
+                <h6 class="mb-3 fw-semibold text-secondary">Category Distribution</h6>
+                <div id="chart-type-pie" style="height: 360px;"></div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="card neumorphic-inner-card h-100 p-3">
+                <h6 class="mb-3 fw-semibold text-secondary">Overall Distribution (Violin)</h6>
+                <div id="chart-violin" style="height: 360px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Magnitude Type Analysis Section -->
+        <div class="card shadow p-4 mb-4 rounded-4 dashboard-section-card neumorphic-card">
+          <h5 class="mb-4 fw-semibold text-gradient">Magnitude Type Analysis</h5>
+          <div class="row g-4">
+            <div class="col-lg-6">
+              <div class="card neumorphic-inner-card h-100 p-3">
+                <h6 class="mb-3 fw-semibold text-secondary">Count</h6>
+                <div id="chart-mag-type-bar" style="height: 360px;"></div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="card neumorphic-inner-card h-100 p-3">
+                <h6 class="mb-3 fw-semibold text-secondary">Percentage</h6>
+                <div id="chart-mag-type-pie" style="height: 360px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Distribution Analysis Section -->
+        <div class="card shadow p-4 mb-4 rounded-4 dashboard-section-card neumorphic-card">
+          <h5 class="mb-4 fw-semibold text-gradient">Distribution Analysis</h5>
+          <div class="row g-4">
+            <div class="col-lg-6">
+              <div class="card neumorphic-inner-card h-100 p-3">
+                <h6 class="mb-3 fw-semibold text-secondary">Depth: Histogram</h6>
+                <div id="chart-depth-histogram" style="height: 300px;"></div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="card neumorphic-inner-card h-100 p-3">
+                <h6 class="mb-3 fw-semibold text-secondary">Depth: Box & Whisker Plot</h6>
+                <div id="chart-depth-box" style="height: 300px;"></div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="card neumorphic-inner-card h-100 p-3">
+                <h6 class="mb-3 fw-semibold text-secondary">Significance: Histogram</h6>
+                <div id="chart-sig-histogram" style="height: 300px;"></div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="card neumorphic-inner-card h-100 p-3">
+                <h6 class="mb-3 fw-semibold text-secondary">Significance: Box & Whisker Plot</h6>
+                <div id="chart-sig-box" style="height: 300px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Relationship Analysis Section -->
+        <div class="card shadow p-4 mb-4 rounded-4 dashboard-section-card neumorphic-card">
+          <h5 class="mb-4 fw-semibold text-gradient">Relationship Analysis</h5>
+          <div class="row g-4">
+            <div class="col-lg-6">
+              <div class="card neumorphic-inner-card h-100 p-3">
+                <h6 class="mb-3 fw-semibold text-secondary">Magnitude vs Depth</h6>
+                <div id="chart-mag-depth" style="height: 360px;"></div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="card neumorphic-inner-card h-100 p-3">
+                <h6 class="mb-3 fw-semibold text-secondary">Magnitude vs Significance</h6>
+                <div id="chart-mag-sig" style="height: 360px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Correlation Heatmap Section -->
+        <div class="card shadow p-4 mb-4 rounded-4 dashboard-section-card neumorphic-card">
+          <h5 class="mb-3 fw-semibold text-gradient">Earthquake Parameters Correlation Matrix</h5>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="correlationMethod" class="form-label fw-semibold">Correlation Method</label>
+              <select class="form-select neumorphic-input" id="correlationMethod">
+                <option value="pearson">Pearson Correlation</option>
+                <option value="spearman">Spearman Rank Correlation</option>
+              </select>
+            </div>
+            <div class="col-md-6 d-flex align-items-end">
+              <div class="form-check neumorphic-checkbox pb-1">
+                <input class="form-check-input dashboard-control" type="checkbox" id="showCorrelationValues" checked>
+                <label class="form-check-label fw-semibold" for="showCorrelationValues">
+                  Show Correlation Values
+                </label>
+              </div>
+            </div>
+          </div>
+          <div id="correlation-heatmap" style="height: 450px;"></div>
+        </div>
+
+        <!-- Tsunami Analysis Section -->
+        <div class="card shadow p-4 mb-4 rounded-4 dashboard-section-card neumorphic-card">
+          <h5 class="mb-4 fw-semibold text-gradient">Tsunami Analysis</h5>
+          <div class="row g-4">
+            <div class="col-lg-6">
+              <div class="card neumorphic-inner-card h-100 p-3">
+                <h6 class="mb-3 fw-semibold text-secondary">Percentage</h6>
+                <div id="chart-tsunami-pie" style="height: 300px;"></div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="card neumorphic-inner-card h-100 p-3">
+                <h6 class="mb-3 fw-semibold text-secondary">Count</h6>
+                <div id="chart-tsunami-bar" style="height: 300px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card shadow p-4 neumorphic-card mt-4 mb-4 rounded-4 dashboard-section-card">
+          <h5 class="mb-3 fw-semibold text-gradient">Anomaly Detection</h5>
           <div class="row mb-3 d-flex align-items-center g-3">
             <div class="col-md-6">
               <select id="anomalyMetric" class="form-select neumorphic-input">
@@ -317,43 +335,58 @@
       <div class="container py-5">
         <div class="row">
           <div class="col-lg-7 col-md-9 mx-auto">
-            <div class="card shadow p-4 p-md-5 rounded-4 border-0">
-              <h3 class="text-center fw-bold">Predict Earthquake Impact</h3>
+            <div class="card shadow p-4 p-md-5 rounded-4 border-0 neumorphic-card prediction-card-bg">
+              <h3 class="text-center fw-bold text-gradient">Predict Earthquake Impact</h3>
               <h5 class="text-center text-muted mb-4 fw-normal">Tsunami Prediction</h5>
               
               <form id="predict-form" class="row g-3" novalidate>
                 <!-- Magnitude -->
                 <div class="col-md-6">
                   <label for="magnitude" class="form-label">Magnitude</label>
-                  <input type="number" class="form-control" id="magnitude" placeholder="e.g., 7.2" step="0.1" required>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-activity"></i></span>
+                    <input type="number" class="form-control" id="magnitude" placeholder="e.g., 7.2" step="0.1" min="0" max="10" required>
+                  </div>
                   <div class="invalid-feedback">Please enter a valid magnitude.</div>
                 </div>
                 
                 <!-- Depth -->
                 <div class="col-md-6">
                   <label for="depth" class="form-label">Depth (km)</label>
-                  <input type="number" class="form-control" id="depth" placeholder="e.g., 10.0" step="0.1" required>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-arrow-down"></i></span>
+                    <input type="number" class="form-control" id="depth" placeholder="e.g., 10.0" step="any" min="0" max="700" required>
+                  </div>
                   <div class="invalid-feedback">Please enter a valid depth.</div>
                 </div>
 
                 <!-- Latitude -->
                 <div class="col-md-6">
                   <label for="latitude" class="form-label">Latitude</label>
-                  <input type="number" class="form-control" id="latitude" placeholder="e.g., 35.68" step="0.01" required>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-globe"></i></span>
+                    <input type="number" class="form-control" id="latitude" placeholder="e.g., 35.68" step="any" min="-90" max="90" required>
+                  </div>
                   <div class="invalid-feedback">Please enter a valid latitude.</div>
                 </div>
 
                 <!-- Longitude -->
                 <div class="col-md-6">
                   <label for="longitude" class="form-label">Longitude</label>
-                  <input type="number" class="form-control" id="longitude" placeholder="e.g., 139.76" step="0.01" required>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-globe2"></i></span>
+                    <input type="number" class="form-control" id="longitude" placeholder="e.g., 139.76" step="any" min="-180" max="180" required>
+                  </div>
                   <div class="invalid-feedback">Please enter a valid longitude.</div>
                 </div>
 
                 <!-- Significance -->
                 <div class="col-md-6">
                   <label for="sig" class="form-label">Significance</label>
-                  <input type="number" class="form-control" id="sig" placeholder="e.g., 800" step="1" required>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-star"></i></span>
+                    <input type="number" class="form-control" id="sig" placeholder="e.g., 800" step="1" required>
+                  </div>
                   <div class="invalid-feedback">Please enter a valid significance value.</div>
                 </div>
                 
@@ -375,8 +408,8 @@
                 
                 <!-- Action Buttons -->
                 <div class="col-12 mt-4 d-grid gap-2 d-sm-flex justify-content-sm-center">
-                  <button type="button" id="clearBtn" class="btn btn-outline-secondary btn-lg">Clear</button>
-                  <button type="submit" class="btn btn-info btn-lg text-white" id="predictBtn">
+                  <button type="button" id="clearBtn" class="btn btn-outline-secondary btn-lg" title="Clear all fields">Clear</button>
+                  <button type="submit" class="btn btn-info btn-lg text-white neumorphic-btn" id="predictBtn">
                     <span class="btn-text">Predict Impact</span>
                     <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                   </button>
@@ -384,7 +417,11 @@
               </form>
 
               <!-- Result Div -->
-              <div id="result" class="mt-4"></div>
+              <div id="result" class="mt-4" style="display:none;">
+                <h5 class="fw-semibold mb-2">Prediction Result</h5>
+                <p>Based on the input parameters, the predicted risk level is:</p>
+                <span class="risk-badge" id="riskLevelBadge">Low Risk</span>
+              </div>
             </div>
           </div>
         </div>
@@ -393,31 +430,34 @@
 
     <!-- Data Tab -->
     <div class="tab-pane fade" id="data" role="tabpanel" aria-labelledby="data-tab">
-      <div class="card shadow p-4 neumorphic-card rounded-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
+      <div class="card shadow p-4 neumorphic-card rounded-4 data-card-bg">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
           <h5 class="mb-0 fw-semibold">Earthquake Dataset</h5>
-          <div class="d-flex gap-2">
-            <input type="text" id="dataSearch" class="form-control neumorphic-input" placeholder="Search...">
-            <select id="dataEntries" class="form-select neumorphic-input">
-              <option value="10">10 entries</option>
-              <option value="25">25 entries</option>
-              <option value="50">50 entries</option>
-              <option value="100">100 entries</option>
-            </select>
+          <div class="d-flex gap-2 align-items-center flex-wrap">
+            <div class="input-group neumorphic-input-group">
+              <select id="dataEntries" class="form-select neumorphic-input">
+                <option value="10">10 entries</option>
+                <option value="25">25 entries</option>
+                <option value="50">50 entries</option>
+                <option value="100">100 entries</option>
+              </select>
+              <span class="input-group-text"><i class="bi bi-chevron-down"></i></span>
+            </div>
           </div>
         </div>
         <div class="table-responsive">
-          <table id="earthquakeTable" class="table table-hover">
+          <table id="earthquakeTable" class="table table-hover neumorphic-table rounded-4 overflow-hidden">
             <thead>
               <tr>
                 <th>Date</th>
+                <th>Magnitude</th>
+                <th title="Depth in kilometers">Depth</th>
                 <th>Latitude</th>
                 <th>Longitude</th>
-                <th>Magnitude</th>
-                <th>Depth</th>
-                <th>Tsunami</th>
                 <th>Location</th>
                 <th>Significance</th>
+                <th>Magnitude Type</th>
+                <th>Tsunami</th>
               </tr>
             </thead>
             <tbody>
@@ -425,11 +465,11 @@
             </tbody>
           </table>
         </div>
-        <div class="d-flex justify-content-between align-items-center mt-3">
+        <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2">
           <div id="tableInfo" class="text-muted">
             Showing 1 to 10 of 100 entries
           </div>
-          <div id="tablePagination" class="pagination">
+          <div id="tablePagination" class="pagination neumorphic-pagination">
             <!-- Pagination will be added by JavaScript -->
           </div>
         </div>

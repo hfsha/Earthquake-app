@@ -287,20 +287,12 @@ h3, h5, h6 {
 }
 
 #result {
-  min-height: 50px;
-  font-size: 1.15rem;
-  background: linear-gradient(135deg, rgba(79, 70, 229, 0.05), rgba(255, 255, 255, 0.9));
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 1rem;
-  box-shadow:
-    inset 6px 6px 12px #c5cee0,
-    inset -6px -6px 12px #ffffff;
-  padding: 1.5rem;
-  opacity: 0;
-  transition: all 0.5s ease;
-  color: #243447;
-  transform: translateY(20px);
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 auto !important;
+  max-width: unset;
 }
 
 #result.visible {
@@ -1171,4 +1163,300 @@ body.dark-mode .summary-card h3 {
   border-radius: 50%;
   margin-right: 8px;
   display: inline-block;
+}
+
+/* Enhanced Prediction Tab Styles */
+.prediction-card-bg {
+  background: linear-gradient(135deg, #f8fbff 0%, #e6f0fa 100%);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.10), 0 1.5px 4px 0 #b2d8f7;
+  border-radius: 32px;
+}
+
+#predict-form .form-control:focus, #predict-form .form-select:focus {
+  box-shadow: 0 0 0 2px #00cfff33;
+  border-color: #00cfff;
+}
+
+#predictBtn.neumorphic-btn {
+  background: linear-gradient(90deg, #00cfff 0%, #00e6d3 100%);
+  border: none;
+  box-shadow: 0 2px 8px #00cfff33;
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+#predictBtn.neumorphic-btn:hover {
+  transform: scale(1.04);
+  box-shadow: 0 4px 16px #00cfff44;
+}
+
+#result > div {
+  max-width: 370px;
+  margin: 2rem auto 0 auto;
+  padding: 1.5rem 1rem 1.2rem 1rem;
+  border-radius: 1.2rem;
+  box-shadow: 0 4px 18px 0 rgba(31,38,135,0.10), 0 1.5px 4px 0 #b2d8f7;
+  border: 1.5px solid #e0e0e0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.95) 100%);
+  transition: box-shadow 0.2s, transform 0.2s;
+  animation: popIn 0.5s cubic-bezier(.68,-0.55,.27,1.55);
+}
+#result > div:hover {
+  box-shadow: 0 8px 32px 0 rgba(31,38,135,0.13), 0 2px 8px 0 #b2d8f7;
+  transform: translateY(-2px) scale(1.02);
+}
+#result h4 {
+  font-size: 1.25rem;
+  margin-bottom: 0.7rem;
+}
+#result .fw-bold.fs-1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+#result .fs-5 {
+  font-size: 1.05rem;
+}
+#result .bi {
+  font-size: 2.2rem !important;
+  margin-bottom: 0.3rem;
+}
+@keyframes popIn {
+  0% { opacity: 0; transform: scale(0.95) translateY(20px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+@media (max-width: 600px) {
+  #result > div {
+    max-width: 98vw;
+    padding: 1.1rem 0.5rem 1rem 0.5rem;
+  }
+  #result .fw-bold.fs-1 {
+    font-size: 1.3rem;
+  }
+  #result h4 {
+    font-size: 1.05rem;
+  }
+}
+
+.risk-badge {
+  display: inline-block;
+  padding: 0.4em 1.2em;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 1.1em;
+  background: #d4f8e8;
+  color: #1a7f37;
+  box-shadow: 0 1px 4px #00cfff22;
+  margin-top: 0.5em;
+}
+.risk-badge.high {
+  background: #ffeaea;
+  color: #d32f2f;
+}
+.risk-badge.medium {
+  background: #fffbe5;
+  color: #bfa100;
+}
+.risk-badge.low {
+  background: #d4f8e8;
+  color: #1a7f37;
+}
+
+/* Input group icon support (Bootstrap icons) */
+.input-group-text {
+  background: #f4fafd;
+  border: none;
+  color: #00bcd4;
+  font-size: 1.2em;
+  box-shadow: 0 1px 4px #b2d8f7;
+}
+
+/* Gradient text for headings */
+.text-gradient {
+  background: linear-gradient(90deg, #00cfff 0%, #00e6d3 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+}
+
+/* Enhanced Data Tab Styles */
+.data-card-bg {
+  background: linear-gradient(135deg, #f8fbff 0%, #e6f0fa 100%);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.10), 0 1.5px 4px 0 #b2d8f7;
+  border-radius: 32px;
+}
+
+.neumorphic-table {
+  background: #fafdff;
+  border-radius: 18px;
+  box-shadow: 0 2px 12px #b2d8f7;
+  overflow: hidden;
+}
+.neumorphic-table thead th {
+  background: #f4fafd;
+  font-weight: 700;
+  font-size: 1.08em;
+  border-bottom: 3px solid #00cfff33;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.neumorphic-table tbody tr {
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.neumorphic-table tbody tr:hover {
+  background: #e6f9f0;
+  box-shadow: 0 2px 8px #00cfff22 inset;
+}
+.neumorphic-table tbody tr:nth-child(even) {
+  background: #f4fafd;
+}
+
+.neumorphic-input-group {
+  background: #fafdff;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px #b2d8f7;
+  overflow: hidden;
+}
+
+.neumorphic-input, .neumorphic-input:focus, .neumorphic-input:active {
+  background: #fafdff;
+  border: none;
+  box-shadow: none;
+  outline: none;
+}
+
+.neumorphic-input-group .input-group-text {
+  background: #f4fafd;
+  border: none;
+  color: #00bcd4;
+  font-size: 1.2em;
+  box-shadow: none;
+}
+
+.neumorphic-pagination .page-link, .neumorphic-pagination button {
+  background: #fafdff;
+  border: none;
+  border-radius: 12px;
+  margin: 0 2px;
+  box-shadow: 0 1px 4px #b2d8f7;
+  color: #00bcd4;
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+}
+.neumorphic-pagination .page-link.active, .neumorphic-pagination button.active {
+  background: linear-gradient(90deg, #00cfff 0%, #00e6d3 100%);
+  color: #fff;
+  box-shadow: 0 2px 8px #00cfff33;
+}
+.neumorphic-pagination .page-link:hover, .neumorphic-pagination button:hover {
+  background: #e6f9f0;
+  color: #0097a7;
+}
+
+/* Responsive tweaks for Data tab controls */
+@media (max-width: 600px) {
+  .neumorphic-input-group, .neumorphic-input {
+    width: 100% !important;
+  }
+  .data-card-bg .d-flex.gap-2 {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+  }
+}
+
+.prediction-result-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  max-width: 400px;
+  margin: 3rem auto 0 auto;
+  padding: 2.5rem 2rem;
+  border-radius: 1.5rem;
+  border: 2px solid;
+  text-align: center;
+  box-shadow: 0 10px 30px -15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease-in-out;
+  animation: pop-in 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.result-icon {
+  font-size: 3.5rem;
+  line-height: 1;
+}
+.result-title {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin-top: 0;
+}
+.result-message {
+  font-size: 1.1rem;
+  color: #555;
+  max-width: 90%;
+  margin: 0 auto;
+}
+/* High Risk "Wow" Factor */
+.result-high-risk {
+  color: #b32a39;
+  animation: pop-in 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), pulse-danger 1.5s infinite;
+}
+@keyframes pulse-danger {
+  0% {
+    box-shadow: 0 10px 30px -15px rgba(0, 0, 0, 0.2), 0 0 0 0 rgba(220, 53, 69, 0.7);
+  }
+  70% {
+    box-shadow: 0 10px 30px -15px rgba(0, 0, 0, 0.2), 0 0 0 20px rgba(220, 53, 69, 0);
+  }
+  100% {
+    box-shadow: 0 10px 30px -15px rgba(0, 0, 0, 0.2), 0 0 0 0 rgba(220, 53, 69, 0);
+  }
+}
+/* Low Risk "Wow" Factor */
+.result-low-risk {
+  color: #2a7e43;
+  position: relative;
+  overflow: hidden; /* For the shine effect */
+}
+.result-low-risk::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 70%);
+  transform: rotate(45deg);
+  animation: shine 4s ease-in-out infinite;
+}
+@keyframes shine {
+  0% { transform: translate(-100%, -100%) rotate(45deg); }
+  70% { transform: translate(100%, 100%) rotate(45deg); }
+  100% { transform: translate(100%, 100%) rotate(45deg); }
+}
+@keyframes pop-in {
+  from { opacity: 0; transform: translateY(20px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@media (max-width: 600px) {
+  .prediction-result-card {
+    max-width: 95%;
+    padding: 1.5rem 1rem;
+    margin-top: 2rem;
+  }
+  .result-title { font-size: 1.75rem; }
+  .result-message { font-size: 1rem; }
+}
+
+/* Style for inner chart cards within dashboard sections */
+.neumorphic-inner-card {
+  background-color: #fdfdff;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  box-shadow: 2px 2px 5px #e8eef7, -2px -2px 5px #ffffff;
+  transition: all 0.2s ease-in-out;
+  border-radius: 12px;
+}
+.neumorphic-inner-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 4px 4px 8px #d9e2f1, -4px -4px 8px #ffffff;
+  border-color: rgba(0, 0, 0, 0.07);
 }

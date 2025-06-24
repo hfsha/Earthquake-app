@@ -886,15 +886,14 @@ function correlationHeatmap(data) {
   }
 
   const layout = {
-    title: `Earthquake Parameters Correlation Matrix (${method.charAt(0).toUpperCase() + method.slice(1)})`,
-    height: 400,
-    margin: { t: 50, r: 50, b: 50, l: 50 },
+    height: 450,
+    margin: { t: 20, r: 20, b: 100, l: 100 },
     xaxis: {
-      title: 'Parameters',
-      tickangle: -45
+      tickangle: -45,
+      automargin: true
     },
     yaxis: {
-      title: 'Parameters'
+      automargin: true
     }
   };
 
@@ -1367,25 +1366,44 @@ function initPrediction() {
       console.log("Prediction API response received:", result);
 
       if (result.success) {
-        // Assuming prediction is a string like 'High', 'Medium', 'Low'
-        let colorClass = 'badge-low';
-        if (result.prediction === 'High Risk') colorClass = 'badge-high';
-        else if (result.prediction === 'Medium Risk') colorClass = 'badge-medium';
+        let riskClass = '';
+        let cardBg = '';
+        let borderColor = '';
+        let iconColor = '';
+        let iconHtml = '';
+        let riskMsg = '';
 
-        // Use CSS variables directly in style attribute or apply CSS class
-        // Using CSS classes is generally preferred for better styling management
-        let bgColor = '';
-        if (colorClass === 'badge-high') bgColor = 'var(--danger)';
-        else if (colorClass === 'badge-medium') bgColor = 'var(--warning)';
-        else bgColor = 'var(--success)';
+        if (result.prediction === 'High Risk') {
+          riskClass = 'result-high-risk';
+          cardBg = 'linear-gradient(135deg, #fff0f1 0%, #ffe1e3 100%)';
+          borderColor = 'rgba(220, 53, 69, 0.3)';
+          iconColor = '#dc3545';
+          iconHtml = '<i class="bi bi-exclamation-triangle-fill"></i>';
+          riskMsg = 'Warning: This event has a high risk of causing a tsunami! Take precautions.';
+        } else if (result.prediction === 'Medium Risk') {
+          riskClass = 'result-medium-risk';
+          cardBg = 'linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%)';
+          borderColor = 'rgba(255, 193, 7, 0.4)';
+          iconColor = '#ffc107';
+          iconHtml = '<i class="bi bi-exclamation-circle-fill"></i>';
+          riskMsg = 'There is a moderate risk. Stay alert and monitor updates.';
+        } else { // Low Risk
+          riskClass = 'result-low-risk';
+          cardBg = 'linear-gradient(135deg, #e8f5e9 0%, #dcf0e1 100%)';
+          borderColor = 'rgba(40, 167, 69, 0.3)';
+          iconColor = '#28a745';
+          iconHtml = '<i class="bi bi-shield-check"></i>';
+          riskMsg = 'This event is unlikely to cause a tsunami.';
+        }
 
-        const predictionBadgeHtml = `<span class="badge ${colorClass} bounce-in" style="background-color: ${bgColor}; color: white;">${result.prediction}</span>`;
         resultDiv.innerHTML = `
-          <div class="alert alert-success mt-3">
-            <h4 class="alert-heading">Prediction Result</h4>
-            <p>Based on the input parameters, the predicted risk level is: ${predictionBadgeHtml}</p>
+          <div class="prediction-result-card ${riskClass}" style="background:${cardBg}; border-color:${borderColor};">
+            <div class="result-icon" style="color:${iconColor};">${iconHtml}</div>
+            <div class="result-title">${result.prediction}</div>
+            <div class="result-message">${riskMsg}</div>
           </div>
         `;
+        resultDiv.style.display = 'block';
       } else {
         throw new Error(result.error || 'Prediction failed');
       }
@@ -1397,6 +1415,7 @@ function initPrediction() {
           <p>${error.message || 'An unknown error occurred during prediction.'}</p>
         </div>
       `;
+      resultDiv.style.display = 'block';
     } finally {
       predictBtn.disabled = false;
       spinner.classList.add('d-none');
@@ -1875,17 +1894,25 @@ function tsunamiDistributionPlots(data) {
     }
   };
 
-  const layout = {
+  const barLayout = {
     title: 'Tsunami Occurrence',
-    xaxis: { title: 'Tsunami' },
+    xaxis: { title: 'Tsunami', automargin: true },
     yaxis: { title: 'Count' },
-    height: 360,
+    height: 300,
     margin: { t: 40, r: 20, b: 60, l: 60 },
     showlegend: false
   };
 
+  const pieLayout = {
+    title: 'Tsunami Distribution',
+    height: 360,
+    margin: { t: 40, r: 20, b: 20, l: 20 },
+    showlegend: true,
+    legend: { orientation: 'h', y: -0.2 }
+  };
+
   console.log("Plotting Tsunami Bar Chart with data:", barTrace.x.length);
-  if(barDiv) Plotly.newPlot(barDiv, [barTrace], layout, { responsive: true });
+  if(barDiv) Plotly.newPlot(barDiv, [barTrace], barLayout, { responsive: true });
 
   // Create pie chart trace
   const pieTrace = {
@@ -1898,14 +1925,6 @@ function tsunamiDistributionPlots(data) {
     },
     textinfo: 'percent+label',
     hole: 0.4
-  };
-
-  const pieLayout = {
-    title: 'Tsunami Distribution',
-    height: 360,
-    margin: { t: 40, r: 20, b: 20, l: 20 },
-    showlegend: true,
-    legend: { orientation: 'h', y: -0.2 }
   };
 
   console.log("Plotting Tsunami Pie Chart with data:", pieTrace.labels.length);
@@ -2086,14 +2105,15 @@ function updateTable() {
   pageData.forEach(quake => {
     const row = document.createElement('tr');
     row.innerHTML = `
-      <td>${new Date(quake.date_time).toLocaleDateString()}</td>
-      <td>${quake.latitude.toFixed(4)}</td>
-      <td>${quake.longitude.toFixed(4)}</td>
-      <td>${quake.magnitude.toFixed(2)}</td>
-      <td>${quake.depth.toFixed(2)}</td>
+      <td>${quake.date_time ? new Date(quake.date_time).toLocaleDateString() : '-'}</td>
+      <td>${quake.magnitude != null ? quake.magnitude.toFixed(2) : '-'}</td>
+      <td>${quake.depth != null ? quake.depth.toFixed(2) : '-'}</td>
+      <td>${quake.latitude != null ? quake.latitude.toFixed(4) : '-'}</td>
+      <td>${quake.longitude != null ? quake.longitude.toFixed(4) : '-'}</td>
+      <td>${quake.location || '-'}</td>
+      <td>${quake.significance != null ? quake.significance : (quake.sig != null ? quake.sig : '-')}</td>
+      <td>${quake.magType || '-'}</td>
       <td>${quake.tsunami === 1 ? 'Yes' : (quake.tsunami === 0 ? 'No' : 'N/A')}</td>
-      <td>${quake.location}</td>
-      <td>${quake.significance}</td>
     `;
     tableBody.appendChild(row);
   });
@@ -2144,25 +2164,11 @@ function updateTableInfo() {
     `Showing ${start} to ${end} of ${filteredData.length} entries`;
 }
 
-// Search functionality
-function handleSearch() {
-  const searchTerm = document.getElementById('dataSearch').value.toLowerCase();
-  filteredData = earthquakeData.filter(quake => 
-    Object.values(quake).some(value => 
-      String(value).toLowerCase().includes(searchTerm)
-    )
-  );
-  currentPage = 1;
-  updateTable();
-}
-
 // Event listeners
 document.addEventListener('DOMContentLoaded', () => {
   // ... existing event listeners ...
 
   // Data table event listeners
-  document.getElementById('dataSearch').addEventListener('input', handleSearch);
-  
   document.getElementById('dataEntries').addEventListener('change', (e) => {
     entriesPerPage = parseInt(e.target.value);
     currentPage = 1;
