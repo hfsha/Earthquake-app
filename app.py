@@ -18,9 +18,9 @@ def load_essentials():
     global df, model, model_columns
     
     # Using the relative paths that worked in your environment
-    data_path = 'Earthquake-app/data/earthquake_cleaned.csv'
-    model_path = 'Earthquake-app/models/earthquake_model.pkl'
-    columns_path = 'Earthquake-app/models/model_columns.pkl'
+    data_path = 'data/earthquake_cleaned.csv'
+    model_path = 'models/earthquake_model.pkl'
+    columns_path = 'models/model_columns.pkl'
     
     # Load earthquake data
     try:
