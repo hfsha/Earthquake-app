@@ -94,4 +94,8 @@ def predict():
 # --- Main Execution ---
 if __name__ == '__main__':
     load_essentials()
-    app.run(debug=True, port=5000)
+    app.run(debug=True, host='127.0.0.1', port=5000)
+else:
+    load_essentials()
+    app.config['ENV'] = 'production'
+    app.config['DEBUG'] = False
