@@ -92,13 +92,13 @@ Binary classification of tsunami risk (0 = no tsunami, 1 = tsunami generated) ba
 
 ## 📸 Demo
 
-### Dashboard Interface
+### Dashboard Tab
 ![image](https://github.com/user-attachments/assets/9793b64c-e57f-43c4-9d94-247dfbd891df)
 
-### Risk Prediction
+### Risk Prediction tab
 ![Image](https://github.com/user-attachments/assets/067de984-d333-4cd8-ae95-2834a6bad1b7)
 
-### Interactive Maps
+### Tabular Data Browsing Tab
 ![image](https://github.com/user-attachments/assets/33c7e014-3683-49df-b57e-1209ee4f4b2f)
 
 ---
