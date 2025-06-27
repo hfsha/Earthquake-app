@@ -121,26 +121,6 @@ Binary classification of tsunami risk (0 = no tsunami, 1 = tsunami generated) ba
 
 ---
 
-## 📝 Reflection
-
-**Strengths:**  
-- Integrates advanced visualization and machine learning in a single platform
-- High accuracy in tsunami prediction
-- User-friendly, real-time, and highly interactive
-
-**Limitations:**  
-- Some geographic and temporal data gaps
-- Focused on tsunami risk (not other hazards)
-- Binary classification may oversimplify risk
-
-**Future Improvements:**  
-- Real-time data feeds
-- Broader hazard prediction (landslides, liquefaction, etc.)
-- 3D and mobile visualizations
-- Integration with population/infrastructure data
-
----
-
 ## 🚀 Getting Started
 
 1. **Clone the repository:**
